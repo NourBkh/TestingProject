@@ -8,7 +8,7 @@ pipeline {
             }
         }
 
-        stage('Install Node.js') {
+        stage('Verify Node.js Installation') {
             steps {
                 sh '''
                     node -v
@@ -21,6 +21,30 @@ pipeline {
             steps {
                 dir('backend') {
                     sh 'npm install'
+                }
+            }
+        }
+
+        stage('Install Frontend Dependencies') {
+            steps {
+                dir('frontend') {
+                    sh 'npm install'
+                }
+            }
+        }
+
+        stage('Run Backend Tests') {
+            steps {
+                dir('backend') {
+                    sh 'npm test'  // Change this if using Flask (use pytest)
+                }
+            }
+        }
+
+        stage('Run Frontend Tests') {
+            steps {
+                dir('frontend') {
+                    sh 'npm test -- --watchAll=false' // Change if needed
                 }
             }
         }
