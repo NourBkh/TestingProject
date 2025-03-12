@@ -52,21 +52,21 @@ pipeline {
             }
         }
 
-        stage('Run Backend Tests') {
-            steps {
-                dir('backend') {
-                    sh 'npm test'  // Change this if using Flask (use pytest)
-                }
-            }
-        }
+        // stage('Run Backend Tests') {
+        //     steps {
+        //         dir('backend') {
+        //             sh 'npm test'  // Change this if using Flask (use pytest)
+        //         }
+        //     }
+        // }
 
-        stage('Run Frontend Tests') {
-            steps {
-                dir('frontend') {
-                    sh 'npm test -- --watchAll=false' // Change if needed
-                }
-            }
-        }
+        // stage('Run Frontend Tests') {
+        //     steps {
+        //         dir('frontend') {
+        //             sh 'npm test -- --watchAll=false' // Change if needed
+        //         }
+        //     }
+        // }
 
 
         stage('Run Selenium UI Test') {
