@@ -30,6 +30,27 @@ pipeline {
         //     }
         // }
 
+        stage('Install Chrome for Selenium') {
+    steps {
+        script {
+            // Check if Google Chrome is already installed
+            def chromeInstalled = sh(script: 'which google-chrome', returnStatus: true)
+
+            // If Chrome is not installed, the returnStatus will be non-zero
+            if (chromeInstalled != 0) {
+                echo 'Google Chrome not found. Installing...'
+                sh '''
+                    sudo apt-get update
+                    sudo apt-get install -y google-chrome-stable
+                '''
+            } else {
+                echo 'Google Chrome is already installed.'
+            }
+        }
+    }
+}
+
+
         stage('Install Root Dependencies') {
             steps {
                 sh 'npm install'
