@@ -21,14 +21,14 @@ pipeline {
             }
         }
 
-        stage('Install Chrome for Selenium') {
-            steps {
-                sh '''
-                    sudo apt-get update
-                    sudo apt-get install -y google-chrome-stable
-                '''
-            }
-        }
+        // stage('Install Chrome for Selenium') {
+        //     steps {
+        //         sh '''
+        //             sudo apt-get update
+        //             sudo apt-get install -y google-chrome-stable
+        //         '''
+        //     }
+        // }
 
         stage('Install Root Dependencies') {
             steps {
