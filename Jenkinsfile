@@ -12,45 +12,45 @@ pipeline {
             }
         }
 
-        // stage('Verify Node.js Installation') {
-        //     steps {
-        //         sh '''
-        //             node -v
-        //             npm -v
-        //         '''
-        //     }
-        // }
+        stage('Verify Node.js Installation') {
+            steps {
+                sh '''
+                    node -v
+                    npm -v
+                '''
+            }
+        }
 
-        // stage('Install Chrome for Selenium') {
-        //     steps {
-        //         sh '''
-        //             sudo apt-get update
-        //             sudo apt-get install -y google-chrome-stable
-        //         '''
-        //     }
-        // }
+        stage('Install Chrome for Selenium') {
+            steps {
+                sh '''
+                    sudo apt-get update
+                    sudo apt-get install -y google-chrome-stable
+                '''
+            }
+        }
 
-        // stage('Install Root Dependencies') {
-        //     steps {
-        //         sh 'npm install'
-        //     }
-        // }
+        stage('Install Root Dependencies') {
+            steps {
+                sh 'npm install'
+            }
+        }
 
-        // stage('Install Backend Dependencies') {
-        //     steps {
-        //         dir('backend') {
-        //             sh 'npm install'
-        //         }
-        //     }
-        // }
+        stage('Install Backend Dependencies') {
+            steps {
+                dir('backend') {
+                    sh 'npm install'
+                }
+            }
+        }
 
-        // stage('Install Frontend Dependencies') {
-        //     steps {
-        //         dir('frontend') {
-        //             sh 'npm install'
-        //         }
-        //     }
-        // }
+        stage('Install Frontend Dependencies') {
+            steps {
+                dir('frontend') {
+                    sh 'npm install'
+                }
+            }
+        }
 
         stage('Run Backend Tests') {
             steps {
