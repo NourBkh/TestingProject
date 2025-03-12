@@ -1,6 +1,10 @@
 pipeline {
     agent any
 
+    environment {
+        CHROME_BIN = '/usr/bin/google-chrome'
+    }
+
     stages {
         stage('Checkout Code') {
             steps {
@@ -8,30 +12,45 @@ pipeline {
             }
         }
 
-        stage('Verify Node.js Installation') {
-            steps {
-                sh '''
-                    node -v
-                    npm -v
-                '''
-            }
-        }
+        // stage('Verify Node.js Installation') {
+        //     steps {
+        //         sh '''
+        //             node -v
+        //             npm -v
+        //         '''
+        //     }
+        // }
 
-        stage('Install Backend Dependencies') {
-            steps {
-                dir('backend') {
-                    sh 'npm install'
-                }
-            }
-        }
+        // stage('Install Chrome for Selenium') {
+        //     steps {
+        //         sh '''
+        //             sudo apt-get update
+        //             sudo apt-get install -y google-chrome-stable
+        //         '''
+        //     }
+        // }
 
-        stage('Install Frontend Dependencies') {
-            steps {
-                dir('frontend') {
-                    sh 'npm install'
-                }
-            }
-        }
+        // stage('Install Root Dependencies') {
+        //     steps {
+        //         sh 'npm install'
+        //     }
+        // }
+
+        // stage('Install Backend Dependencies') {
+        //     steps {
+        //         dir('backend') {
+        //             sh 'npm install'
+        //         }
+        //     }
+        // }
+
+        // stage('Install Frontend Dependencies') {
+        //     steps {
+        //         dir('frontend') {
+        //             sh 'npm install'
+        //         }
+        //     }
+        // }
 
         stage('Run Backend Tests') {
             steps {
@@ -46,6 +65,13 @@ pipeline {
                 dir('frontend') {
                     sh 'npm test -- --watchAll=false' // Change if needed
                 }
+            }
+        }
+
+
+        stage('Run Selenium UI Test') {
+            steps {
+                sh 'npm test || exit 1'  // Fail pipeline if UI test fails
             }
         }
     }
