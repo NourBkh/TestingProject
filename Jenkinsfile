@@ -63,6 +63,18 @@ pipeline {
             }
         }
 
+        stage('Install Frontend Dependencies') {
+    steps {
+        dir('frontend') {
+            sh '''
+                npm install
+                chmod +x node_modules/.bin/react-scripts
+            '''
+        }
+    }
+}
+
+
         stage('Start Backend') {
             steps {
                 dir('backend') {
@@ -73,15 +85,17 @@ pipeline {
         }
 
         stage('Start Frontend') {
-            steps {
-                dir('frontend') {
-                    sh '''
-                        nohup npm start -- --silent > frontend.log 2>&1 &
-                    '''
-                }
-                sh 'sleep 10'
-            }
+    steps {
+        dir('frontend') {
+            sh '''
+                chmod +x node_modules/.bin/react-scripts
+                nohup npm start -- --silent > frontend.log 2>&1 &
+            '''
         }
+        sh 'sleep 10'
+    }
+}
+
 
         stage('Verify Backend is Running') {
             steps {
