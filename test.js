@@ -43,20 +43,22 @@
 // })();
 
 
-const { Builder } = require("selenium-webdriver");
-const chrome = require("selenium-webdriver/chrome");
+const { Builder, By, until } = require('selenium-webdriver');
+const chrome = require('selenium-webdriver/chrome');
+require('selenium-webdriver/chromium'); // Import to use selenium-manager
 
-const chromeOptions = new chrome.Options();
-chromeOptions.setChromeBinaryPath(process.env.CHROME_BIN);
-chromeOptions.addArguments("--headless", "--no-sandbox", "--disable-dev-shm-usage");
+(async function addUserTest() {
+  // Run in headless mode for Jenkins
+  let options = new chrome.Options();
+  options.addArguments('headless');  // Add 'headless' argument to run without UI
+  options.addArguments('no-sandbox');  // Add no-sandbox argument (common for Jenkins environments)
+  options.addArguments('disable-dev-shm-usage'); // Prevents crashing in CI environments
 
-// Explicitly set ChromeDriver path
-const driver = new Builder()
-  .forBrowser("chrome")
-  .setChromeOptions(chromeOptions)
-  .setChromeService(new chrome.ServiceBuilder(process.env.CHROMEDRIVER_BIN)) // Add this line
-  .build();
-
+  // Let selenium-manager automatically handle driver
+  let driver = await new Builder()
+    .forBrowser('chrome')
+    .setChromeOptions(options)
+    .build();
 
 
   try {
