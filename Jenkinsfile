@@ -21,6 +21,20 @@ pipeline {
             }
         }
 
+
+
+        stage('Verify Environment Variables') {
+    steps {
+        sh 'echo "PATH: $PATH"'
+        sh 'which node'
+        sh 'node -v'
+    }
+}
+
+
+
+
+
         // stage('Install Chrome for Selenium') {
         //     steps {
         //         sh '''
