@@ -45,16 +45,23 @@
 
 const { Builder, By, until } = require('selenium-webdriver');
 const chrome = require('selenium-webdriver/chrome');
-require('chromedriver');
+require('chromedriver');  // Ensure chromedriver is available in node_modules
 
 (async function addUserTest() {
   // Run in headless mode for Jenkins
   let options = new chrome.Options();
-  options.addArguments('headless');  // Add 'headless' argument
+  options.addArguments('headless');  // Add 'headless' argument to run without UI
   options.addArguments('no-sandbox');  // Add no-sandbox argument (common for Jenkins environments)
-  options.addArguments('disable-dev-shm-usage'); // This prevents crashing in CI environments
+  options.addArguments('disable-dev-shm-usage'); // Prevents crashing in CI environments
 
-  let driver = await new Builder().forBrowser('chrome').setChromeOptions(options).build();
+  // Explicitly set the chromedriver path
+  const chromedriverPath = '/usr/local/bin/chromedriver'; // Modify if necessary
+  options.setChromeBinaryPath(chromedriverPath); // Set the path to chromedriver
+
+  let driver = await new Builder()
+    .forBrowser('chrome')
+    .setChromeOptions(options)
+    .build();
 
   try {
     console.log('🚀 Starting Selenium UI Test');
