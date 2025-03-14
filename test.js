@@ -51,6 +51,8 @@ require('chromedriver');
   // Run in headless mode for Jenkins
   let options = new chrome.Options();
   options.addArguments('headless');  // Add 'headless' argument
+  options.addArguments('no-sandbox');  // Add no-sandbox argument (common for Jenkins environments)
+  options.addArguments('disable-dev-shm-usage'); // This prevents crashing in CI environments
 
   let driver = await new Builder().forBrowser('chrome').setChromeOptions(options).build();
 
