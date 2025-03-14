@@ -2,24 +2,15 @@ pipeline {
     agent any
 
     environment {
-    CHROME_BIN = '/usr/bin/google-chrome'
-    CHROMEDRIVER_BIN = '/usr/local/bin/chromedriver'
-    PATH = "/usr/local/bin:${env.PATH}"
-}
-
+        CHROME_BIN = '/usr/bin/google-chrome'
+        CHROMEDRIVER_BIN = '/usr/local/bin/chromedriver'
+        PATH = "/usr/local/bin:${env.PATH}"
+    }
 
     stages {
         stage('Checkout Code') {
             steps {
                 git branch: 'main', url: 'https://github.com/NourBkh/TestingProject.git'
-            }
-        }
-
-        stage('Verify Environment Variables') {
-            steps {
-                sh 'echo "PATH: $PATH"'
-                sh 'which node'
-                sh 'node -v'
             }
         }
 
@@ -35,12 +26,9 @@ pipeline {
         stage('Install Chrome for Selenium') {
             steps {
                 script {
-                    // Check if Google Chrome is already installed
                     def chromeInstalled = sh(script: 'which google-chrome', returnStatus: true)
-
-                    // If Chrome is not installed, the returnStatus will be non-zero
                     if (chromeInstalled != 0) {
-                        echo 'Google Chrome not found. Installing...'
+                        echo 'Installing Google Chrome...'
                         sh '''
                             sudo apt-get update
                             sudo apt-get install -y google-chrome-stable
@@ -55,11 +43,9 @@ pipeline {
         stage('Install ChromeDriver for Selenium') {
             steps {
                 script {
-                    // Check if chromedriver is installed
                     def chromedriverInstalled = sh(script: 'which chromedriver', returnStatus: true)
-
                     if (chromedriverInstalled != 0) {
-                        echo 'ChromeDriver not found. Installing...'
+                        echo 'Installing ChromeDriver...'
                         sh '''
                             sudo apt-get install -y chromium-chromedriver
                             sudo apt-get update
@@ -71,35 +57,35 @@ pipeline {
             }
         }
 
-        stage('Install Root Dependencies') {
+        stage('Install Dependencies') {
             steps {
                 sh 'npm install'
             }
         }
 
-        stage('Install Backend Dependencies') {
+        stage('Start Backend') {
             steps {
                 dir('backend') {
-                    sh 'npm install'
+                    sh 'npm start &'
                 }
+                sh 'sleep 10'  // Give backend time to start
             }
         }
 
-        stage('Install Frontend Dependencies') {
+        stage('Start Frontend') {
             steps {
                 dir('frontend') {
-                    sh 'npm install'
+                    sh 'npm start &'
                 }
+                sh 'sleep 10'  // Give frontend time to start
             }
         }
 
-        stage('Verify Paths') {
+        stage('Verify Application is Running') {
             steps {
-                sh 'echo $PATH'
-                sh 'which chromedriver'
-                sh 'chromedriver --version'
-                sh 'which google-chrome'
-                sh 'google-chrome --version'
+                sh '''
+                    curl --retry 10 --retry-delay 5 --retry-connrefused -I http://localhost:3000
+                '''
             }
         }
 
