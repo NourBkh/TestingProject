@@ -107,6 +107,16 @@ pipeline {
         // }
 
 
+        stage('Verify Paths') {
+    steps {
+        sh 'echo $PATH'
+        sh 'which chromedriver'
+        sh 'chromedriver --version'
+    }
+}
+
+
+
         stage('Run Selenium UI Test') {
             steps {
                 sh 'npm test || exit 1'  // Fail pipeline if UI test fails
