@@ -12,6 +12,15 @@ pipeline {
             }
         }
 
+
+            stage('Verify Environment Variables') {
+    steps {
+        sh 'echo "PATH: $PATH"'
+        sh 'which node'
+        sh 'node -v'
+    }
+}
+
         stage('Verify Node.js Installation') {
             steps {
                 sh '''
@@ -23,13 +32,7 @@ pipeline {
 
 
 
-        stage('Verify Environment Variables') {
-    steps {
-        sh 'echo "PATH: $PATH"'
-        sh 'which node'
-        sh 'node -v'
-    }
-}
+    
 
 
 
