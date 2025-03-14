@@ -3,6 +3,7 @@ pipeline {
 
     environment {
         CHROME_BIN = '/usr/bin/google-chrome'
+        PATH = "/usr/local/bin:${env.PATH}"
     }
 
     stages {

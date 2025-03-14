@@ -45,7 +45,7 @@
 
 const { Builder, By, until } = require('selenium-webdriver');
 const chrome = require('selenium-webdriver/chrome');
-require('selenium-webdriver/chromium');  // Required for the manager utility
+require('selenium-webdriver/chromium'); // Import to use selenium-manager
 
 (async function addUserTest() {
   // Run in headless mode for Jenkins
@@ -54,11 +54,12 @@ require('selenium-webdriver/chromium');  // Required for the manager utility
   options.addArguments('no-sandbox');  // Add no-sandbox argument (common for Jenkins environments)
   options.addArguments('disable-dev-shm-usage'); // Prevents crashing in CI environments
 
-  // Let selenium-manager automatically manage ChromeDriver
+  // Let selenium-manager automatically handle driver
   let driver = await new Builder()
     .forBrowser('chrome')
     .setChromeOptions(options)
     .build();
+
 
   try {
     console.log('🚀 Starting Selenium UI Test');
