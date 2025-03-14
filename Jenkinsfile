@@ -66,18 +66,18 @@ pipeline {
         stage('Start Backend') {
             steps {
                 dir('backend') {
-                    sh 'npm start &'
+                    sh 'nohup node server.js > backend.log 2>&1 &'  // Runs backend in background
                 }
-                sh 'sleep 10'  // Give backend time to start
+                sh 'sleep 10'  // Wait for backend to start
             }
         }
 
         stage('Start Frontend') {
             steps {
                 dir('frontend') {
-                    sh 'npm start &'
+                    sh 'nohup npm start > frontend.log 2>&1 &'  // Runs frontend in background
                 }
-                sh 'sleep 10'  // Give frontend time to start
+                sh 'sleep 10'  // Wait for frontend to start
             }
         }
 
