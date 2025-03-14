@@ -66,7 +66,7 @@ pipeline {
         stage('Start Backend') {
             steps {
                 dir('backend') {
-                    sh 'nohup node server.js > backend.log 2>&1 &'  // Runs backend in background
+                    sh 'nohup node server.js > backend.log 2>&1 &'
                 }
                 sh 'sleep 10'  // Wait for backend to start
             }
@@ -75,16 +75,26 @@ pipeline {
         stage('Start Frontend') {
             steps {
                 dir('frontend') {
-                    sh 'nohup npm start > frontend.log 2>&1 &'  // Runs frontend in background
+                    sh '''
+                        nohup npm start -- --silent > frontend.log 2>&1 &
+                    '''
                 }
-                sh 'sleep 10'  // Wait for frontend to start
+                sh 'sleep 10'
             }
         }
 
-        stage('Verify Application is Running') {
+        stage('Verify Backend is Running') {
             steps {
                 sh '''
-                    curl --retry 10 --retry-delay 5 --retry-connrefused -I http://localhost:3000
+                    curl --retry 10 --retry-delay 5 --retry-connrefused -I http://localhost:5000
+                '''
+            }
+        }
+
+        stage('Verify Frontend is Running') {
+            steps {
+                sh '''
+                    curl --retry 10 --retry-delay 5 --retry-connrefused -I http://localhost:3000 || (cat frontend/frontend.log && exit 1)
                 '''
             }
         }
