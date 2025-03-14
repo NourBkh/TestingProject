@@ -45,7 +45,7 @@
 
 const { Builder, By, until } = require('selenium-webdriver');
 const chrome = require('selenium-webdriver/chrome');
-require('chromedriver');  // Ensure chromedriver is available in node_modules
+require('selenium-webdriver/chromium');  // Required for the manager utility
 
 (async function addUserTest() {
   // Run in headless mode for Jenkins
@@ -54,10 +54,7 @@ require('chromedriver');  // Ensure chromedriver is available in node_modules
   options.addArguments('no-sandbox');  // Add no-sandbox argument (common for Jenkins environments)
   options.addArguments('disable-dev-shm-usage'); // Prevents crashing in CI environments
 
-  // Explicitly set the chromedriver path
-  const chromedriverPath = '/usr/local/bin/chromedriver'; // Modify if necessary
-  options.setChromeBinaryPath(chromedriverPath); // Set the path to chromedriver
-
+  // Let selenium-manager automatically manage ChromeDriver
   let driver = await new Builder()
     .forBrowser('chrome')
     .setChromeOptions(options)
