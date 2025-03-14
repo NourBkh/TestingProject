@@ -2,9 +2,11 @@ pipeline {
     agent any
 
     environment {
-        CHROME_BIN = '/usr/bin/google-chrome'
-        PATH = "/usr/local/bin:${env.PATH}"
-    }
+    CHROME_BIN = '/usr/bin/google-chrome'
+    CHROMEDRIVER_BIN = '/usr/local/bin/chromedriver'
+    PATH = "/usr/local/bin:${env.PATH}"
+}
+
 
     stages {
         stage('Checkout Code') {
