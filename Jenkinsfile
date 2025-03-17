@@ -8,7 +8,6 @@ pipeline {
         SONARQUBE_URL = 'http://localhost:9000'
         SONARQUBE_TOKEN = credentials('sonar')  
         SLACK_CHANNEL = '#build'
-        //SLACK_WEBHOOK_URL = 'your-webhook-url' 
     }
 
     stages {
@@ -168,39 +167,44 @@ pipeline {
  }
 
 
- post {
-        success {
-            // Send success notification to Slack when build and tests pass
-            slackSend (
-                channel: SLACK_CHANNEL, 
-                message: "Build and tests passed successfully for ${env.JOB_NAME} - ${env.BUILD_URL}"
-            )
-        }
-
-        failure {
-            // Send failure notification to Slack when build or tests fail
-            slackSend (
-                channel: SLACK_CHANNEL, 
-                message: "Build or tests failed for ${env.JOB_NAME} - ${env.BUILD_URL}"
-            )
-        }
-
-        unstable {
-            // Send notification for unstable builds (e.g., tests partially failed)
-            slackSend (
-                channel: SLACK_CHANNEL, 
-                message: "Build is unstable for ${env.JOB_NAME} - ${env.BUILD_URL}"
-            )
-        }
-
-        always {
-            // Optionally, you can send a notification regardless of the build result (success, failure, etc.)
-            slackSend (
-                channel: SLACK_CHANNEL, 
-                message: "Build completed for ${env.JOB_NAME} - ${env.BUILD_URL}"
-            )
-        }
+post {
+    success {
+        // Send success notification to Slack when build and tests pass
+        slackSend (
+            channel: SLACK_CHANNEL, 
+            message: "Build and tests passed successfully for ${env.JOB_NAME} - ${env.BUILD_URL}",
+            tokenCredentialId: 'pfe-za54358' // Make sure the token is valid and exists in Jenkins credentials
+        )
     }
+
+    failure {
+        // Send failure notification to Slack when build or tests fail
+        slackSend (
+            channel: SLACK_CHANNEL, 
+            message: "Build or tests failed for ${env.JOB_NAME} - ${env.BUILD_URL}",
+            tokenCredentialId: 'pfe-za54358'
+        )
+    }
+
+    unstable {
+        // Send notification for unstable builds (e.g., tests partially failed)
+        slackSend (
+            channel: SLACK_CHANNEL, 
+            message: "Build is unstable for ${env.JOB_NAME} - ${env.BUILD_URL}",
+            tokenCredentialId: 'pfe-za54358'
+        )
+    }
+
+    always {
+        // Optionally, you can send a notification regardless of the build result (success, failure, etc.)
+        slackSend (
+            channel: SLACK_CHANNEL, 
+            message: "Build completed for ${env.JOB_NAME} - ${env.BUILD_URL}",
+            tokenCredentialId: 'pfe-za54358'
+        )
+    }
+}
+
 
 
 
