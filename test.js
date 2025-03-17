@@ -96,25 +96,11 @@ async function runTest() {
 //         let pageSource = await driver.getPageSource();
 // console.log(`📄 Page Source:\n ${pageSource}`);
 
+console.log('Connecting to MongoDB URI:', process.env.MONGO_URI);
 
-        // await driver.wait(until.elementLocated(By.css("ul.list-group")), 20000);
-        // console.log("✅ User list is now visible");
+        await driver.wait(until.elementLocated(By.css("ul.list-group")), 20000);
+        console.log("✅ User list is now visible");
 
-// Verify MongoDB connection status
-// await driver.get('http://localhost:5000/check-db-connection');
-// let dbStatus = await driver.findElement(By.css('body')).getText();
-// console.log('DB Connection Status:', dbStatus);
-
-// if (!dbStatus.includes('Database connection is good!')) {
-//     throw new Error('❌ Database connection failed!');
-// }
-
-
-
-        await driver.wait(async () => {
-            let listItems = await driver.findElements(By.css("ul.list-group li"));
-            return listItems.length > 0;  // Wait for at least one item
-        }, 30000);  // Increase wait time to 30 seconds
         
 
         let listItems = await driver.findElements(By.css("ul.list-group li"));
