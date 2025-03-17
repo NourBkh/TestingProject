@@ -76,10 +76,10 @@ async function runTest() {
         // Step 3: Submit the form
         await driver.wait(until.elementLocated(By.css('button.btn.btn-primary')), 5000).click();
         console.log('✅ Submitted form');
-        await driver.sleep(3000);
+        await driver.sleep(5000);
 
         // Step 4: Verify user added
-        let newUser = await driver.wait(until.elementLocated(By.xpath("//li[contains(text(), 'John Doe')]")), 5000);
+        let newUser = await driver.wait(until.elementLocated(By.xpath("//li[contains(text(), 'John Doe (john.doe@example.com)')]")), 10000);
         let newUserText = await newUser.getText();
 
         if (newUserText.includes('John Doe')) {
