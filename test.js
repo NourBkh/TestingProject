@@ -51,6 +51,8 @@ chromeOptions.setChromeBinaryPath(process.env.CHROME_BIN);
 // chromeOptions.addArguments("--headless", "--no-sandbox", "--disable-dev-shm-usage");
 chromeOptions.addArguments("--no-sandbox", "--disable-dev-shm-usage");
 chromeOptions.addArguments("--disable-gpu");
+chromeOptions.addArguments("--user-data-dir=/tmp/selenium/chrome-user-data");
+chromeOptions.addArguments("--incognito");
 //let driver = new Builder().forBrowser("chrome").setChromeOptions(options).build();
 
 
@@ -82,8 +84,8 @@ async function runTest() {
         console.log('✅ Submitted form');
         await driver.sleep(5000);
 
-        let pageSource = await driver.getPageSource();
-console.log(`📄 Page Source:\n ${pageSource}`);
+//         let pageSource = await driver.getPageSource();
+// console.log(`📄 Page Source:\n ${pageSource}`);
 
 
         await driver.wait(until.elementLocated(By.css("ul.list-group")), 20000);
