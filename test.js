@@ -53,7 +53,7 @@ chromeOptions.addArguments("--no-sandbox", "--disable-dev-shm-usage");
 chromeOptions.addArguments("--disable-gpu");
 chromeOptions.addArguments("--user-data-dir=/tmp/selenium/chrome-user-data");
 chromeOptions.addArguments("--incognito");
-//let driver = new Builder().forBrowser("chrome").setChromeOptions(options).build();
+let driver = new Builder().forBrowser("chrome").setChromeOptions(options).build();
 
 
 async function runTest() {
