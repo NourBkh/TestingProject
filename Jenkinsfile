@@ -74,6 +74,39 @@ pipeline {
     }
 }
 
+stage('Fix Chrome & Setup Selenium') {
+            steps {
+                script {
+                    echo 'Killing old Chrome processes...'
+                    sh 'pkill -f chrome || true' 
+
+                    def chromeInstalled = sh(script: 'which google-chrome', returnStatus: true)
+                    if (chromeInstalled != 0) {
+                        echo 'Installing Google Chrome...'
+                        sh '''
+                            sudo apt-get update
+                            sudo apt-get install -y google-chrome-stable
+                        '''
+                    } else {
+                        echo 'Google Chrome is already installed.'
+                    }
+
+                    def chromedriverInstalled = sh(script: 'which chromedriver', returnStatus: true)
+                    if (chromedriverInstalled != 0) {
+                        echo 'Installing ChromeDriver...'
+                        sh '''
+                            sudo apt-get install -y chromium-chromedriver
+                            sudo apt-get update
+                            sudo ln -sf /usr/lib/chromium-browser/chromedriver /usr/local/bin/chromedriver
+                        '''
+                    } else {
+                        echo 'ChromeDriver is already installed.'
+                    }
+                }
+            }
+        }
+
+
 
         stage('Start Backend') {
             steps {
