@@ -81,6 +81,13 @@ async function runTest() {
         await driver.wait(until.elementLocated(By.css("ul.list-group")), 10000);
         console.log("✅ User list is now visible");
 
+        let listItems = await driver.findElements(By.css("ul.list-group li"));
+console.log(`📝 Found ${listItems.length} list items`);
+for (let item of listItems) {
+    console.log("📝 List item text: " + (await item.getText()));
+}
+
+
 
         // Step 4: Verify user added
         let newUser = await driver.wait(until.elementLocated(By.xpath("//li[normalize-space()='John Doe (john.doe@example.com)']")), 10000);
