@@ -79,7 +79,7 @@ async function runTest() {
         await driver.sleep(5000);
 
         // Step 4: Verify user added
-        let newUser = await driver.wait(until.elementLocated(By.xpath("//li[contains(., 'John Doe')]")), 10000);
+        let newUser = await driver.wait(until.elementLocated(By.xpath("//li[contains(., 'John Doe (john.doe@example.com)')]")), 10000);
         let newUserText = await newUser.getText();
 
         if (newUserText.includes('John Doe')) {
