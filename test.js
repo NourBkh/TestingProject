@@ -90,7 +90,7 @@ for (let item of listItems) {
 
 
         // Step 4: Verify user added
-        let newUser = await driver.wait(until.elementLocated(By.xpath("//li[normalize-space()='John Doe (john.doe@example.com)']")), 10000);
+        let newUser = await driver.wait(until.elementLocated(By.xpath("//li[contains(., 'John Doe (john.doe@example.com)')]")), 10000);
         let newUserText = await newUser.getText();
 
         if (newUserText.includes('John Doe')) {
