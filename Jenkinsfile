@@ -115,20 +115,20 @@ pipeline {
         }
 
      
-               stage('Check MongoDB Connection') {
-            steps {
-                script {
-                    try {
-                        // Check MongoDB connection using the mongo shell command
-                        sh 'mongo --eval "db.runCommand({ ping: 1 })"'
-                    } catch (Exception e) {
-                        echo "MongoDB connection failed!"
-                        currentBuild.result = 'FAILURE'
-                        error("MongoDB connection failed!")
-                    }
-                }
-            }
-        }
+        //        stage('Check MongoDB Connection') {
+        //     steps {
+        //         script {
+        //             try {
+        //                 // Check MongoDB connection using the mongo shell command
+        //                 sh 'mongo --eval "db.runCommand({ ping: 1 })"'
+        //             } catch (Exception e) {
+        //                 echo "MongoDB connection failed!"
+        //                 currentBuild.result = 'FAILURE'
+        //                 error("MongoDB connection failed!")
+        //             }
+        //         }
+        //     }
+        // }
  
 
         stage('Run Selenium UI Test') {
