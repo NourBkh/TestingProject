@@ -78,6 +78,10 @@ async function runTest() {
         console.log('✅ Submitted form');
         await driver.sleep(5000);
 
+        await driver.wait(until.elementLocated(By.css("ul.list-group")), 10000);
+        console.log("✅ User list is now visible");
+
+
         // Step 4: Verify user added
         let newUser = await driver.wait(until.elementLocated(By.xpath("//li[normalize-space()='John Doe (john.doe@example.com)']")), 10000);
         let newUserText = await newUser.getText();
