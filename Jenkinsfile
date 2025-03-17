@@ -6,7 +6,7 @@ pipeline {
         CHROMEDRIVER_BIN = '/usr/local/bin/chromedriver'
         PATH = "/usr/local/bin:${env.PATH}"
         SONARQUBE_URL = 'http://localhost:9000'
-        SONARQUBE_TOKEN = credentials('sonarqube')  
+        SONARQUBE_TOKEN = credentials('sonar')  
     }
 
     stages {
