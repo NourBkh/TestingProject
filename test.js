@@ -97,8 +97,20 @@ async function runTest() {
 // console.log(`📄 Page Source:\n ${pageSource}`);
 
 
-        await driver.wait(until.elementLocated(By.css("ul.list-group")), 20000);
-        console.log("✅ User list is now visible");
+        // await driver.wait(until.elementLocated(By.css("ul.list-group")), 20000);
+        // console.log("✅ User list is now visible");
+
+        // Example: Check DB connection through an API endpoint (if available)
+await driver.get('http://localhost:5000/api/check-db-connection');  // Assuming this endpoint checks DB status
+let dbStatus = await driver.findElement(By.css('.db-status')).getText();
+console.log('DB Connection Status:', dbStatus);
+
+
+        await driver.wait(async () => {
+            let listItems = await driver.findElements(By.css("ul.list-group li"));
+            return listItems.length > 0;  // Wait for at least one item
+        }, 30000);  // Increase wait time to 30 seconds
+        
 
         let listItems = await driver.findElements(By.css("ul.list-group li"));
 console.log(`📝 Found ${listItems.length} list items`);
