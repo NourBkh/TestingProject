@@ -149,12 +149,12 @@ pipeline {
                 script {
                     echo 'Running SonarQube Analysis...'
                     sh '''
-                        npm install -g sonarqube-scanner
-                        sonar-scanner \
-                            -Dsonar.projectKey=your_project_key \
-                            -Dsonar.sources=. \
-                            -Dsonar.host.url=${SONARQUBE_URL} \
-                            -Dsonar.login=${SONARQUBE_TOKEN}
+                        sudo npm install -g sonarqube-scanner
+                sudo sonar-scanner \
+                    -Dsonar.projectKey=your_project_key \
+                    -Dsonar.sources=. \
+                    -Dsonar.host.url=${SONARQUBE_URL} \
+                    -Dsonar.login=${SONARQUBE_TOKEN}
                     '''
                 }
             }
