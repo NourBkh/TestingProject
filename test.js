@@ -52,18 +52,16 @@ const chromeOptions = new chrome.Options();
 chromeOptions.setChromeBinaryPath(process.env.CHROME_BIN);
 
 
-// Create a unique user data directory for the test session
-const userDataDir = path.join(__dirname, 'chrome-user-data');
+// Ensure a unique user data directory for each test run
+const userDataDir = path.join(__dirname, `chrome-user-data-${Date.now()}`);
 if (!fs.existsSync(userDataDir)) {
     fs.mkdirSync(userDataDir, { recursive: true });
 }
 // chromeOptions.addArguments("--headless", "--no-sandbox", "--disable-dev-shm-usage");
-chromeOptions.addArguments("--no-sandbox", "--disable-dev-shm-usage");
-chromeOptions.addArguments("--disable-gpu");
-chromeOptions.addArguments("--user-data-dir=/tmp/selenium/chrome-user-data");
-chromeOptions.addArguments("--incognito");
+chromeOptions.addArguments(`--user-data-dir=${userDataDir}`); // Use the unique directory
+chromeOptions.addArguments("--no-sandbox", "--disable-dev-shm-usage", "--disable-gpu");
 chromeOptions.addArguments("--disable-software-rasterizer");
-chromeOptions.addArguments("--disable-extensions"); 
+chromeOptions.addArguments("--disable-extensions");
 
 
 
