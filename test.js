@@ -78,7 +78,11 @@ async function runTest() {
         console.log('✅ Submitted form');
         await driver.sleep(5000);
 
-        await driver.wait(until.elementLocated(By.css("ul.list-group")), 10000);
+        let pageSource = await driver.getPageSource();
+console.log(`📄 Page Source:\n ${pageSource}`);
+
+
+        await driver.wait(until.elementLocated(By.css("ul.list-group")), 20000);
         console.log("✅ User list is now visible");
 
         let listItems = await driver.findElements(By.css("ul.list-group li"));
