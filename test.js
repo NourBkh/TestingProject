@@ -49,8 +49,8 @@ const chrome = require("selenium-webdriver/chrome");
 const chromeOptions = new chrome.Options();
 chromeOptions.setChromeBinaryPath(process.env.CHROME_BIN);
 // chromeOptions.addArguments("--headless", "--no-sandbox", "--disable-dev-shm-usage");
-options.addArguments("--no-sandbox", "--disable-dev-shm-usage");
-options.addArguments("--disable-gpu");
+chromeOptions.addArguments("--no-sandbox", "--disable-dev-shm-usage");
+chromeOptions.addArguments("--disable-gpu");
 //let driver = new Builder().forBrowser("chrome").setChromeOptions(options).build();
 
 
