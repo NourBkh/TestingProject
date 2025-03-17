@@ -154,7 +154,7 @@ pipeline {
 
                 # Run SonarQube analysis using the locally installed scanner
                 npx sonar-scanner \
-                    -Dsonar.projectKey=your_project_key \
+                    -Dsonar.projectKey=TestingProject \
                     -Dsonar.sources=. \
                     -Dsonar.host.url=${SONARQUBE_URL} \
                     -Dsonar.login=${SONARQUBE_TOKEN}
