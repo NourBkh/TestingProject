@@ -145,20 +145,23 @@ pipeline {
 
 
   stage('Run SonarQube Analysis') {
-            steps {
-                script {
-                    echo 'Running SonarQube Analysis...'
-                    sh '''
-                        sudo npm install -g sonarqube-scanner
-                sudo sonar-scanner \
+    steps {
+        script {
+            echo 'Running SonarQube Analysis...'
+            sh '''
+                # Install SonarQube scanner locally
+                npm install sonarqube-scanner
+
+                # Run SonarQube analysis using the locally installed scanner
+                npx sonar-scanner \
                     -Dsonar.projectKey=your_project_key \
                     -Dsonar.sources=. \
                     -Dsonar.host.url=${SONARQUBE_URL} \
                     -Dsonar.login=${SONARQUBE_TOKEN}
-                    '''
-                }
-            }
+            '''
         }
+    }
+}
 
 
 
