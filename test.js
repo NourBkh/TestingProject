@@ -45,15 +45,26 @@
 
 const { Builder, By, until } = require("selenium-webdriver");
 const chrome = require("selenium-webdriver/chrome");
+const path = require("path");
+const fs = require("fs");
 
 const chromeOptions = new chrome.Options();
 chromeOptions.setChromeBinaryPath(process.env.CHROME_BIN);
+
+
+// Create a unique user data directory for the test session
+const userDataDir = path.join(__dirname, 'chrome-user-data');
+if (!fs.existsSync(userDataDir)) {
+    fs.mkdirSync(userDataDir, { recursive: true });
+}
 // chromeOptions.addArguments("--headless", "--no-sandbox", "--disable-dev-shm-usage");
 chromeOptions.addArguments("--no-sandbox", "--disable-dev-shm-usage");
 chromeOptions.addArguments("--disable-gpu");
 chromeOptions.addArguments("--user-data-dir=/tmp/selenium/chrome-user-data");
 chromeOptions.addArguments("--incognito");
-let driver = new Builder().forBrowser("chrome").setChromeOptions(options).build();
+chromeOptions.addArguments("--disable-software-rasterizer");
+chromeOptions.addArguments("--disable-extensions"); 
+
 
 
 async function runTest() {
