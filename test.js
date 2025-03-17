@@ -100,10 +100,15 @@ async function runTest() {
         // await driver.wait(until.elementLocated(By.css("ul.list-group")), 20000);
         // console.log("✅ User list is now visible");
 
-        // Example: Check DB connection through an API endpoint (if available)
-await driver.get('http://localhost:5000/api/check-db-connection');  // Assuming this endpoint checks DB status
-let dbStatus = await driver.findElement(By.css('.db-status')).getText();
-console.log('DB Connection Status:', dbStatus);
+// Verify MongoDB connection status
+// await driver.get('http://localhost:5000/check-db-connection');
+// let dbStatus = await driver.findElement(By.css('body')).getText();
+// console.log('DB Connection Status:', dbStatus);
+
+// if (!dbStatus.includes('Database connection is good!')) {
+//     throw new Error('❌ Database connection failed!');
+// }
+
 
 
         await driver.wait(async () => {

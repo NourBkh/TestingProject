@@ -40,3 +40,16 @@ app.delete("/users/:id", async (req, res) => {
 });
 
 app.listen(5000, () => console.log("Server running on port 5000"));
+
+// app.get("/check-db-connection", async (req, res) => {
+//     try {
+//         // Check if MongoDB connection is alive
+//         await mongoose.connection.db.command({ ping: 1 });
+//         res.status(200).send("Database connection is good!");
+//     } catch (err) {
+//         res.status(500).send(`Database connection failed: ${err.message}`);
+//     }
+// });
+console.log('Connecting to MongoDB URI:', process.env.MONGO_URI);
+
+
