@@ -5,6 +5,8 @@ pipeline {
         CHROME_BIN = '/usr/bin/google-chrome'
         CHROMEDRIVER_BIN = '/usr/local/bin/chromedriver'
         PATH = "/usr/local/bin:${env.PATH}"
+        SONARQUBE_URL = 'http://localhost:9000'
+        SONARQUBE_TOKEN = credentials('sonarqube')  
     }
 
     stages {
@@ -129,6 +131,9 @@ pipeline {
         //         }
         //     }
         // }
+
+
+      
  
 
         stage('Run Selenium UI Test') {
@@ -136,5 +141,31 @@ pipeline {
                 sh 'npm test || exit 1'  // Fail pipeline if UI test fails
             }
         }
+
+
+
+  stage('Run SonarQube Analysis') {
+            steps {
+                script {
+                    echo 'Running SonarQube Analysis...'
+                    sh '''
+                        npm install -g sonarqube-scanner
+                        sonar-scanner \
+                            -Dsonar.projectKey=your_project_key \
+                            -Dsonar.sources=. \
+                            -Dsonar.host.url=${SONARQUBE_URL} \
+                            -Dsonar.login=${SONARQUBE_TOKEN}
+                    '''
+                }
+            }
+        }
+
+
+
+
+
+
+
+
     }
 }
