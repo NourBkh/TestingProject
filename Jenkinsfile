@@ -164,6 +164,71 @@ pipeline {
     }
 }
 
+// stage('Start MongoDB') {
+//     steps {
+//         script {
+//             // Start MongoDB container in the background
+//             sh 'docker run -d --name mongodb -p 27017:27017 mongo:latest'
+//         }
+//     }
+// }
+// stage('Wait for MongoDB') {
+//     steps {
+//         script {
+//             // Wait for MongoDB to be ready
+//             sh '''
+//                 until docker exec mongodb mongo --eval "db.runCommand({ connectionStatus: 1 })"; do
+//                     echo "Waiting for MongoDB to start..."
+//                     sleep 5
+//                 done
+//             '''
+//         }
+//     }
+// }
+// stage('Set MongoDB URI') {
+//     steps {
+//         script {
+//             // Set MongoDB URI for backend
+//             env.MONGO_URI = 'mongodb://localhost:27017/crud-app'  // Assuming backend connects to MongoDB at localhost
+//         }
+//     }
+// }
+
+
+stage('Build Docker Images') {
+    steps {
+        script {
+            echo "Building Docker images for frontend and backend..."
+            
+            sh '''
+                docker build -t testingprojectFrontend:latest -f frontend/Dockerfile frontend/
+                docker build -t testingprojectBackend:latest -f backend/Dockerfile backend/
+            '''
+        }
+    }
+}
+
+stage('Pull Existing Images') {
+    steps {
+        script {
+            echo "Pulling existing images from Docker Hub..."
+
+            // Pull the frontend image
+            sh 'docker pull yourdockerhubusername/testingprojectFrontend:latest'
+
+            // Pull the backend image
+            sh 'docker pull yourdockerhubusername/testingprojectBackend:latest'
+
+            // Optionally, pull the MongoDB image (if needed)
+            sh 'docker pull mongo:latest'
+        }
+    }
+}
+
+
+
+
+
  }
 
 
