@@ -8,6 +8,12 @@ pipeline {
         SONARQUBE_URL = 'http://localhost:9000'
         SONARQUBE_TOKEN = credentials('sonar')  
         SLACK_CHANNEL = '#build'
+        //DOCKER_REGISTRY_URL = 'https://hub.docker.com/repository/docker/nourbkh/testingproject/general'
+        // DOCKER_USERNAME = credentials('docker-hub-username')
+        // DOCKER_PASSWORD = credentials('docker-hub-password')
+        // MONGO_URI = 'mongodb://username:password@mongodb_host:27017/database'
+        // BUILD_TAG = "${env.BUILD_NUMBER}"
+        // GIT_BRANCH = "${env.GIT_BRANCH}"
     }
 
     stages {
@@ -201,8 +207,8 @@ stage('Build Docker Images') {
             echo "Building Docker images for frontend and backend..."
             
             sh '''
-                docker build -t testingprojectFrontend:latest -f frontend/Dockerfile frontend/
-                docker build -t testingprojectBackend:latest -f backend/Dockerfile backend/
+                docker build -t testingprojectfrontend:latest -f frontend/Dockerfile frontend/
+                docker build -t testingprojectbackend:latest -f backend/Dockerfile backend/
             '''
         }
     }
@@ -214,10 +220,10 @@ stage('Pull Existing Images') {
             echo "Pulling existing images from Docker Hub..."
 
             // Pull the frontend image
-            sh 'docker pull yourdockerhubusername/testingprojectFrontend:latest'
+            sh 'docker pull nourbkh/testingprojectfrontend:latest'
 
             // Pull the backend image
-            sh 'docker pull yourdockerhubusername/testingprojectBackend:latest'
+            sh 'docker pull nourbkh/testingprojectbackend:latest'
 
             // Optionally, pull the MongoDB image (if needed)
             sh 'docker pull mongo:latest'
