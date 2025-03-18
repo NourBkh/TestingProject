@@ -1,0 +1,33 @@
+version: '3.8'
+
+services:
+  backend:
+    build:
+      context: ./backend  # Path to the backend directory
+      dockerfile: Dockerfile  # Dockerfile for backend
+    ports:
+      - "5000:5000"  # Expose backend on port 5000
+    depends_on:
+      - mongodb  # Ensure MongoDB starts before the backend
+    environment:
+      - MONGO_URI=mongodb://mongodb:27017/crud-app  # Connect backend to MongoDB service
+
+  frontend:
+    build:
+      context: ./frontend  # Path to the frontend directory
+      dockerfile: Dockerfile  # Dockerfile for frontend
+    ports:
+      - "3000:3000"  # Expose frontend on port 3000
+    depends_on:
+      - backend  # Ensures frontend starts after backend  
+
+  mongodb:
+    image: mongo:latest  # Use the latest MongoDB image
+    container_name: mongodb
+    ports:
+      - "27017:27017"  # Expose MongoDB on port 27017
+    volumes:
+      - mongodb_data:/data/db  # Persist MongoDB data
+
+volumes:
+  mongodb_data:
