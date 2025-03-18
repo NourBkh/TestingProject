@@ -9,8 +9,8 @@ pipeline {
         SONARQUBE_TOKEN = credentials('sonar')  
         SLACK_CHANNEL = '#build'
         //DOCKER_REGISTRY_URL = 'https://hub.docker.com/repository/docker/nourbkh/testingproject/general'
-        // DOCKER_USERNAME = credentials('docker-hub-username')
-        // DOCKER_PASSWORD = credentials('docker-hub-password')
+         DOCKER_USERNAME = credentials('dockerhub')
+         DOCKER_PASSWORD = credentials('dockerhub')
         // MONGO_URI = 'mongodb://username:password@mongodb_host:27017/database'
         // BUILD_TAG = "${env.BUILD_NUMBER}"
         // GIT_BRANCH = "${env.GIT_BRANCH}"
@@ -214,22 +214,42 @@ stage('Build Docker Images') {
     }
 }
 
-stage('Pull Existing Images') {
+// stage('Pull Existing Images') {
+//     steps {
+//         script {
+//             echo "Pulling existing images from Docker Hub..."
+
+//             // Pull the frontend image
+//             sh 'docker pull nourbkh/testingprojectfrontend:latest'
+
+//             // Pull the backend image
+//             sh 'docker pull nourbkh/testingprojectbackend:latest'
+
+//             // Optionally, pull the MongoDB image (if needed)
+//             sh 'docker pull mongo:latest'
+//         }
+//     }
+// }
+
+stage('Push Docker Images to Docker Hub') {
     steps {
         script {
-            echo "Pulling existing images from Docker Hub..."
+            echo "Pushing Docker images to Docker Hub..."
 
-            // Pull the frontend image
-            sh 'docker pull nourbkh/testingprojectfrontend:latest'
+            // Log in to Docker Hub (make sure credentials are stored in Jenkins)
+            withCredentials([usernamePassword(credentialsId: 'dockerhub-credentials', usernameVariable: 'DOCKER_USERNAME', passwordVariable: 'DOCKER_PASSWORD')]) {
+                sh 'echo $DOCKER_PASSWORD | docker login -u $DOCKER_USERNAME --password-stdin'
+            }
 
-            // Pull the backend image
-            sh 'docker pull nourbkh/testingprojectbackend:latest'
+            // Push the frontend image to Docker Hub
+            sh 'docker push nourbkh/testingprojectfrontend:latest'
 
-            // Optionally, pull the MongoDB image (if needed)
-            sh 'docker pull mongo:latest'
+            // Push the backend image to Docker Hub
+            sh 'docker push nourbkh/testingprojectbackend:latest'
         }
     }
 }
+
 
 
 
