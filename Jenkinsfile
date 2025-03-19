@@ -9,8 +9,8 @@ pipeline {
         SONARQUBE_TOKEN = credentials('sonar')  
         SLACK_CHANNEL = '#build'
         //DOCKER_REGISTRY_URL = 'https://hub.docker.com/repository/docker/nourbkh/testingproject/general'
-         DOCKER_USERNAME = credentials('dockerhub')
-         DOCKER_PASSWORD = credentials('dockerhub')
+        //  DOCKER_USERNAME = credentials('dockerhub')
+        //  DOCKER_PASSWORD = credentials('dockerhub')
         // MONGO_URI = 'mongodb://username:password@mongodb_host:27017/database'
         // BUILD_TAG = "${env.BUILD_NUMBER}"
         // GIT_BRANCH = "${env.GIT_BRANCH}"
