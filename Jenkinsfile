@@ -214,6 +214,24 @@ stage('Build Docker Images') {
     }
 }
 
+
+stage('Trivy Security Scan') {
+    steps {
+        script {
+            echo "Running Trivy scan on Docker images..."
+
+            sh '''
+                # Scan frontend image
+                trivy image --exit-code 1 --severity HIGH,CRITICAL nourbkh/testingprojectfrontend:latest || echo "Vulnerabilities found in frontend image!"
+
+                # Scan backend image
+                trivy image --exit-code 1 --severity HIGH,CRITICAL nourbkh/testingprojectbackend:latest || echo "Vulnerabilities found in backend image!"
+            '''
+        }
+    }
+}
+
+
 // stage('Pull Existing Images') {
 //     steps {
 //         script {
