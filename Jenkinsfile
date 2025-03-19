@@ -215,21 +215,38 @@ stage('Build Docker Images') {
 }
 
 
-stage('Trivy Security Scan') {
+stage('Cleanup Disk Space') {
     steps {
         script {
-            echo "Running Trivy scan on Docker images..."
-
+            echo "Cleaning up unused Docker images and containers..."
             sh '''
-                # Scan frontend image
-                trivy image --exit-code 1 --severity HIGH,CRITICAL nourbkh/testingprojectfrontend:latest || echo "Vulnerabilities found in frontend image!"
-
-                # Scan backend image
-                trivy image --exit-code 1 --severity HIGH,CRITICAL nourbkh/testingprojectbackend:latest || echo "Vulnerabilities found in backend image!"
+                docker system prune -af
+                rm -rf /tmp/*
             '''
         }
     }
 }
+
+
+stage('Trivy Scan') {
+    steps {
+        script {
+            echo "Running Trivy scan on Docker images..."
+            sh '''
+                # Set custom cache directory
+                export TRIVY_CACHE_DIR="/var/lib/trivy"
+                mkdir -p $TRIVY_CACHE_DIR
+
+                # Scan frontend image with minimal mode
+                trivy image --exit-code 1 --severity HIGH,CRITICAL --no-progress --scanners vuln --cache-dir $TRIVY_CACHE_DIR nourbkh/testingprojectfrontend:latest || echo "Vulnerabilities found in frontend image!"
+
+                # Scan backend image with minimal mode
+                trivy image --exit-code 1 --severity HIGH,CRITICAL --no-progress --scanners vuln --cache-dir $TRIVY_CACHE_DIR nourbkh/testingprojectbackend:latest || echo "Vulnerabilities found in backend image!"
+            '''
+        }
+    }
+}
+
 
 
 // stage('Pull Existing Images') {
@@ -249,23 +266,25 @@ stage('Trivy Security Scan') {
 //     }
 // }
 
-stage('Push Docker Images to Docker Hub') {
-    steps {
-        script {
-            echo "Pushing Docker images to Docker Hub..."
 
-            // Log in to Docker Hub (make sure credentials are stored in Jenkins)
-            withCredentials([usernamePassword(credentialsId: 'dockerhub-credentials', usernameVariable: 'DOCKER_USERNAME', passwordVariable: 'DOCKER_PASSWORD')]) {
-                sh 'echo $DOCKER_PASSWORD | docker login -u $DOCKER_USERNAME --password-stdin'
-            }
 
-            sh '''
-                docker push nourbkh/testingprojectfrontend:latest
-                docker push nourbkh/testingprojectbackend:latest
-            '''
-    }
-}
-}
+// stage('Push Docker Images to Docker Hub') {
+//     steps {
+//         script {
+//             echo "Pushing Docker images to Docker Hub..."
+
+//             // Log in to Docker Hub (make sure credentials are stored in Jenkins)
+//             withCredentials([usernamePassword(credentialsId: 'dockerhub-credentials', usernameVariable: 'DOCKER_USERNAME', passwordVariable: 'DOCKER_PASSWORD')]) {
+//                 sh 'echo $DOCKER_PASSWORD | docker login -u $DOCKER_USERNAME --password-stdin'
+//             }
+
+//             sh '''
+//                 docker push nourbkh/testingprojectfrontend:latest
+//                 docker push nourbkh/testingprojectbackend:latest
+//             '''
+//     }
+// }
+// }
 
 
 
