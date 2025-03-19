@@ -207,8 +207,8 @@ stage('Build Docker Images') {
             echo "Building Docker images for frontend and backend..."
             
             sh '''
-                docker build -t testingprojectfrontend:latest -f frontend/Dockerfile frontend/
-                docker build -t testingprojectbackend:latest -f backend/Dockerfile backend/
+                docker build -t nourbkh/testingprojectfrontend:latest -f frontend/Dockerfile frontend/
+                docker build -t nourbkh/testingprojectbackend:latest -f backend/Dockerfile backend/
             '''
         }
     }
@@ -241,12 +241,10 @@ stage('Push Docker Images to Docker Hub') {
                 sh 'echo $DOCKER_PASSWORD | docker login -u $DOCKER_USERNAME --password-stdin'
             }
 
-            // Push the frontend image to Docker Hub
-            sh 'docker push nourbkh/testingprojectfrontend:latest'
-
-            // Push the backend image to Docker Hub
-            sh 'docker push nourbkh/testingprojectbackend:latest'
-        }
+            sh '''
+                docker push nourbkh/testingprojectfrontend:latest
+                docker push nourbkh/testingprojectbackend:latest
+            '''
     }
 }
 
