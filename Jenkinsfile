@@ -15,10 +15,10 @@ pipeline {
         // BUILD_TAG = "${env.BUILD_NUMBER}"
         // GIT_BRANCH = "${env.GIT_BRANCH}"
         K8S_CONFIG_REPO_URL = 'https://github.com/NourBkh/k8s-config-repo.git'
-    K8S_CONFIG_BRANCH = 'main'
-    DOCKER_IMAGE_FRONTEND = 'nourbkh/testingprojectfrontend'
-    DOCKER_IMAGE_BACKEND = 'nourbkh/testingprojectbackend'
-    GIT_CREDENTIALS_ID = 'TestingProject'  
+        K8S_CONFIG_BRANCH = 'main'
+        DOCKER_IMAGE_FRONTEND = 'nourbkh/testingprojectfrontend'
+        DOCKER_IMAGE_BACKEND = 'nourbkh/testingprojectbackend'
+        GIT_CREDENTIALS_ID = 'TestingProject'  
     }
 
     stages {
