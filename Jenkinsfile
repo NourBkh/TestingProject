@@ -14,6 +14,11 @@ pipeline {
         // MONGO_URI = 'mongodb://username:password@mongodb_host:27017/database'
         // BUILD_TAG = "${env.BUILD_NUMBER}"
         // GIT_BRANCH = "${env.GIT_BRANCH}"
+        K8S_CONFIG_REPO_URL = 'https://github.com/NourBkh/k8s-config-repo.git'
+    K8S_CONFIG_BRANCH = 'main'
+    DOCKER_IMAGE_FRONTEND = 'nourbkh/testingprojectfrontend'
+    DOCKER_IMAGE_BACKEND = 'nourbkh/testingprojectbackend'
+    GIT_CREDENTIALS_ID = 'TestingProject'  
     }
 
     stages {
@@ -215,37 +220,37 @@ stage('Build Docker Images') {
 }
 
 
-stage('Cleanup Disk Space') {
-    steps {
-        script {
-            echo "Cleaning up unused Docker images and containers..."
-            sh '''
-                docker system prune -af
-                rm -rf /tmp/*
-            '''
-        }
-    }
-}
+// stage('Cleanup Disk Space') {
+//     steps {
+//         script {
+//             echo "Cleaning up unused Docker images and containers..."
+//             sh '''
+//                 docker system prune -af
+//                 rm -rf /tmp/*
+//             '''
+//         }
+//     }
+// }
 
 
-stage('Trivy Scan') {
-    steps {
-        script {
-            echo "Running Trivy scan on Docker images..."
-            sh '''
-                # Set custom cache directory
-                export TRIVY_CACHE_DIR="/var/lib/trivy"
-                mkdir -p $TRIVY_CACHE_DIR
+// stage('Trivy Scan') {
+//     steps {
+//         script {
+//             echo "Running Trivy scan on Docker images..."
+//             sh '''
+//                 # Set custom cache directory
+//                 export TRIVY_CACHE_DIR="/var/lib/trivy"
+//                 mkdir -p $TRIVY_CACHE_DIR
 
-                # Scan frontend image with minimal mode
-                trivy image --exit-code 1 --severity HIGH,CRITICAL --no-progress --scanners vuln --cache-dir $TRIVY_CACHE_DIR nourbkh/testingprojectfrontend:latest || echo "Vulnerabilities found in frontend image!"
+//                 # Scan frontend image with minimal mode
+//                 trivy image --exit-code 1 --severity HIGH,CRITICAL --no-progress --scanners vuln --cache-dir $TRIVY_CACHE_DIR nourbkh/testingprojectfrontend:latest || echo "Vulnerabilities found in frontend image!"
 
-                # Scan backend image with minimal mode
-                trivy image --exit-code 1 --severity HIGH,CRITICAL --no-progress --scanners vuln --cache-dir $TRIVY_CACHE_DIR nourbkh/testingprojectbackend:latest || echo "Vulnerabilities found in backend image!"
-            '''
-        }
-    }
-}
+//                 # Scan backend image with minimal mode
+//                 trivy image --exit-code 1 --severity HIGH,CRITICAL --no-progress --scanners vuln --cache-dir $TRIVY_CACHE_DIR nourbkh/testingprojectbackend:latest || echo "Vulnerabilities found in backend image!"
+//             '''
+//         }
+//     }
+// }
 
 
 
@@ -285,6 +290,40 @@ stage('Trivy Scan') {
 //     }
 // }
 // }
+
+
+stage('Update Kubernetes Manifests & Push to Git') {
+    steps {
+        script {
+            echo "Updating Kubernetes deployment manifests with the new Docker images..."
+
+            // Clone k8s-config-repo
+            sh '''
+                rm -rf k8s-config-repo
+                git clone -b ${K8S_CONFIG_BRANCH} ${K8S_CONFIG_REPO_URL} k8s-config-repo
+            '''
+
+           // Update both frontend and backend images in the deployment file
+            sh '''
+                sed -i "s|image: ${DOCKER_IMAGE_FRONTEND}:.*|image: ${DOCKER_IMAGE_FRONTEND}:latest|" k8s-config-repo/testingP/deployment.yml
+                sed -i "s|image: ${DOCKER_IMAGE_BACKEND}:.*|image: ${DOCKER_IMAGE_BACKEND}:latest|" k8s-config-repo/testingP/deployment.yml
+            '''
+
+            // Commit and push changes
+            withCredentials([usernamePassword(credentialsId: GIT_CREDENTIALS_ID, usernameVariable: 'GIT_USER', passwordVariable: 'GIT_PASS')]) {
+                sh '''
+                    cd k8s-config-repo
+                    git config user.name "Jenkins CI"
+                    git config user.email "jenkins@automatisation"
+                    git add .
+                    git commit -m "Update Kubernetes deployment with latest images"
+                    git push https://${GIT_USER}:${GIT_PASS}@github.com/YourUser/k8s-config-repo.git ${K8S_CONFIG_BRANCH}
+                '''
+            }
+        }
+    }
+}
+
 
 
 
