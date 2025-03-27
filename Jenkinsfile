@@ -292,37 +292,37 @@ stage('Build Docker Images') {
 // }
 
 
-stage('Update Kubernetes Manifests & Push to Git') {
-    steps {
-        script {
-            echo "Updating Kubernetes deployment manifests with the new Docker images..."
+// stage('Update Kubernetes Manifests & Push to Git') {
+//     steps {
+//         script {
+//             echo "Updating Kubernetes deployment manifests with the new Docker images..."
 
-            // Clone k8s-config-repo
-            sh '''
-                rm -rf k8s-config-repo
-                git clone -b ${K8S_CONFIG_BRANCH} ${K8S_CONFIG_REPO_URL} k8s-config-repo
-            '''
+//             // Clone k8s-config-repo
+//             sh '''
+//                 rm -rf k8s-config-repo
+//                 git clone -b ${K8S_CONFIG_BRANCH} ${K8S_CONFIG_REPO_URL} k8s-config-repo
+//             '''
 
-           // Update both frontend and backend images in the deployment file
-            sh '''
-                sed -i "s|image: ${DOCKER_IMAGE_FRONTEND}:.*|image: ${DOCKER_IMAGE_FRONTEND}:latest|" k8s-config-repo/testingP/deployment.yml
-                sed -i "s|image: ${DOCKER_IMAGE_BACKEND}:.*|image: ${DOCKER_IMAGE_BACKEND}:latest|" k8s-config-repo/testingP/deployment.yml
-            '''
+//            // Update both frontend and backend images in the deployment file
+//             sh '''
+//                 sed -i "s|image: ${DOCKER_IMAGE_FRONTEND}:.*|image: ${DOCKER_IMAGE_FRONTEND}:latest|" k8s-config-repo/testingP/deployment.yml
+//                 sed -i "s|image: ${DOCKER_IMAGE_BACKEND}:.*|image: ${DOCKER_IMAGE_BACKEND}:latest|" k8s-config-repo/testingP/deployment.yml
+//             '''
 
-            // Commit and push changes
-            withCredentials([usernamePassword(credentialsId: GIT_CREDENTIALS_ID, usernameVariable: 'GIT_USER', passwordVariable: 'GIT_PASS')]) {
-                sh '''
-                    cd k8s-config-repo
-                    git config user.name "Jenkins CI"
-                    git config user.email "jenkins@automatisation"
-                    git add .
-                    git commit -m "Update Kubernetes deployment with latest images"
-                    git push https://${GIT_USER}:${GIT_PASS}@github.com/YourUser/k8s-config-repo.git ${K8S_CONFIG_BRANCH}
-                '''
-            }
-        }
-    }
-}
+//             // Commit and push changes
+//             withCredentials([usernamePassword(credentialsId: GIT_CREDENTIALS_ID, usernameVariable: 'GIT_USER', passwordVariable: 'GIT_PASS')]) {
+//                 sh '''
+//                     cd k8s-config-repo
+//                     git config user.name "Jenkins CI"
+//                     git config user.email "jenkins@automatisation"
+//                     git add .
+//                     git commit -m "Update Kubernetes deployment with latest images"
+//                     git push https://${GIT_USER}:${GIT_PASS}@github.com/YourUser/k8s-config-repo.git ${K8S_CONFIG_BRANCH}
+//                 '''
+//             }
+//         }
+//     }
+// }
 
 
 
