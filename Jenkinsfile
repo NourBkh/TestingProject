@@ -327,6 +327,42 @@ stage('Build Docker Images') {
 
 
 
+stage('Update Helm Chart & Push to Git') {
+    steps {
+        script {
+            echo "Updating Helm values with the new Docker images..."
+
+            // Clone the Helm config repo
+            sh '''
+                rm -rf k8s-config-repo
+                git clone -b ${K8S_CONFIG_BRANCH} ${K8S_CONFIG_REPO_URL} k8s-config-repo
+            '''
+
+            // Update values files with the new image tags
+            sh '''
+                sed -i "s|repository: .*testingprojectfrontend.*|repository: ${DOCKER_IMAGE_FRONTEND}|" k8s-config-repo/helmTestingP/testingprojectHelm/values-frontend.yaml
+                sed -i "s|repository: .*testingprojectbackend.*|repository: ${DOCKER_IMAGE_BACKEND}|" k8s-config-repo/helmTestingP/testingprojectHelm/values-backend.yaml
+            '''
+
+            // Commit and push the updates
+            withCredentials([usernamePassword(credentialsId: GIT_CREDENTIALS_ID, usernameVariable: 'GIT_USER', passwordVariable: 'GIT_PASS')]) {
+                sh '''
+                    cd k8s-config-repo
+                    git config user.name "Jenkins CI"
+                    git config user.email "jenkins@automatisation"
+                    git add .
+                    git commit -m "Update Helm values with latest image tags"
+                    git push https://${GIT_USER}:${GIT_PASS}@github.com/NourBkh/k8s-config-repo.git ${K8S_CONFIG_BRANCH}
+                '''
+            }
+        }
+    }
+}
+
+
+
+
+
 
 
 
