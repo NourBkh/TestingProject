@@ -347,13 +347,17 @@ stage('Update Helm Chart & Push to Git') {
             // Commit and push the updates
             withCredentials([usernamePassword(credentialsId: GIT_CREDENTIALS_ID, usernameVariable: 'GIT_USER', passwordVariable: 'GIT_PASS')]) {
                 sh '''
-                    cd k8s-config-repo
-                    git config user.name "Jenkins CI"
-                    git config user.email "jenkins@automatisation"
-                    git add .
-                    git commit -m "Update Helm values with latest image tags"
-                    git push https://${GIT_USER}:${GIT_PASS}@github.com/NourBkh/k8s-config-repo.git ${K8S_CONFIG_BRANCH}
-                '''
+    cd k8s-config-repo
+    git config user.name "Jenkins CI"
+    git config user.email "jenkins@automatisation"
+    git add .
+    if git diff --quiet; then
+        echo "No changes to commit."
+    else
+        git commit -m "Update Helm values with latest image tags"
+        git push https://${GIT_USER}:${GIT_PASS}@github.com/NourBkh/k8s-config-repo.git ${K8S_CONFIG_BRANCH}
+    fi
+'''
             }
         }
     }
