@@ -13,11 +13,19 @@ RUN npm install
 # Copy the rest of the application files into the container
 COPY . .
 
+
+# Build the React app for production
+RUN npm run build
+
+# Install serve to serve the static files
+RUN npm install -g serve
+
+
 # Expose port 3000, which is the default port for React development server
 EXPOSE 3000
 
 # Set environment variable to ensure React app binds to all network interfaces
 ENV HOST=0.0.0.0
 
-# Start the React app using npm start
-CMD ["npm", "start"]
+# Serve the production build
+CMD ["serve", "-s", "build", "-l", "3000"]
