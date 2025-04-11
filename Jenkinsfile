@@ -19,6 +19,8 @@ pipeline {
         DOCKER_IMAGE_FRONTEND = 'nourbkh/testingprojectfrontend'
         DOCKER_IMAGE_BACKEND = 'nourbkh/testingprojectbackend'
         GIT_CREDENTIALS_ID = 'TestingProject'  
+       // IMAGE_TAG = sh(script: 'git rev-parse --short HEAD', returnStdout: true).trim()
+
     }
 
     stages {
@@ -205,16 +207,30 @@ pipeline {
 //     }
 // }
 
+stage('Init') {
+            steps {
+                script {
+                    // Get Git commit short hash as IMAGE_TAG
+                    env.IMAGE_TAG = sh(script: 'git rev-parse --short HEAD', returnStdout: true).trim()
+                }
+            }
+        }
+
 
 stage('Build Docker Images') {
     steps {
         script {
             echo "Building Docker images for frontend and backend..."
             
-            sh '''
-                docker build -t nourbkh/testingprojectfrontend:latest -f frontend/Dockerfile frontend/
-                docker build -t nourbkh/testingprojectbackend:latest -f backend/Dockerfile backend/
-            '''
+            // sh '''
+            //     docker build -t nourbkh/testingprojectfrontend:${IMAGE_TAG} -f frontend/Dockerfile frontend/
+            //     docker build -t nourbkh/testingprojectbackend:${IMAGE_TAG} -f backend/Dockerfile backend/
+            // '''
+
+                    sh """
+                        docker build -t ${env.DOCKER_IMAGE_FRONTEND}:${env.IMAGE_TAG} -f frontend/Dockerfile frontend/
+                        docker build -t ${env.DOCKER_IMAGE_BACKEND}:${env.IMAGE_TAG} -f backend/Dockerfile backend/
+                    """
         }
     }
 }
@@ -283,10 +299,15 @@ stage('Push Docker Images to Docker Hub') {
                 sh 'echo $DOCKER_PASSWORD | docker login -u $DOCKER_USERNAME --password-stdin'
             }
 
-            sh '''
-                docker push nourbkh/testingprojectfrontend:latest
-                docker push nourbkh/testingprojectbackend:latest
-            '''
+            // sh '''
+            //     docker push nourbkh/testingprojectfrontend:${IMAGE_TAG}
+            //     docker push nourbkh/testingprojectbackend:${IMAGE_TAG}
+            // '''
+
+                    sh """
+                        docker push ${env.DOCKER_IMAGE_FRONTEND}:${env.IMAGE_TAG}
+                        docker push ${env.DOCKER_IMAGE_BACKEND}:${env.IMAGE_TAG}
+                    """
     }
 }
 }
@@ -339,10 +360,22 @@ stage('Update Helm Chart & Push to Git') {
             '''
 
             // Update values files with the new image tags
-            sh '''
-                sed -i "s|repository: .*testingprojectfrontend.*|repository: ${DOCKER_IMAGE_FRONTEND}|" k8s-config-repo/helmTestingP/testingprojectHelm/values-frontend.yaml
-                sed -i "s|repository: .*testingprojectbackend.*|repository: ${DOCKER_IMAGE_BACKEND}|" k8s-config-repo/helmTestingP/testingprojectHelm/values-backend.yaml
-            '''
+            // sh '''
+            //     sed -i "s|repository: .*testingprojectfrontend.*|repository: ${DOCKER_IMAGE_FRONTEND}|" k8s-config-repo/helmTestingP/testingprojectHelm/values-frontend.yaml
+            //     sed -i "s|repository: .*testingprojectbackend.*|repository: ${DOCKER_IMAGE_BACKEND}|" k8s-config-repo/helmTestingP/testingprojectHelm/values-backend.yaml
+            // '''
+
+
+//             sh """
+//     sed -i "s|tag: .*|tag: ${IMAGE_TAG}|" k8s-config-repo/helmTestingP/testingprojectHelm/values-frontend.yaml
+//     sed -i "s|tag: .*|tag: ${IMAGE_TAG}|" k8s-config-repo/helmTestingP/testingprojectHelm/values-backend.yaml
+// """
+
+
+                    sh """
+                        sed -i "s|tag: .*|tag: ${env.IMAGE_TAG}|" k8s-config-repo/helmTestingP/testingprojectHelm/values-frontend.yaml
+                        sed -i "s|tag: .*|tag: ${env.IMAGE_TAG}|" k8s-config-repo/helmTestingP/testingprojectHelm/values-backend.yaml
+                    """
 
             // Commit and push the updates
             withCredentials([usernamePassword(credentialsId: GIT_CREDENTIALS_ID, usernameVariable: 'GIT_USER', passwordVariable: 'GIT_PASS')]) {
