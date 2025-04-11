@@ -273,23 +273,23 @@ stage('Build Docker Images') {
 
 
 
-// stage('Push Docker Images to Docker Hub') {
-//     steps {
-//         script {
-//             echo "Pushing Docker images to Docker Hub..."
+stage('Push Docker Images to Docker Hub') {
+    steps {
+        script {
+            echo "Pushing Docker images to Docker Hub..."
 
-//             // Log in to Docker Hub (make sure credentials are stored in Jenkins)
-//             withCredentials([usernamePassword(credentialsId: 'dockerhub-credentials', usernameVariable: 'DOCKER_USERNAME', passwordVariable: 'DOCKER_PASSWORD')]) {
-//                 sh 'echo $DOCKER_PASSWORD | docker login -u $DOCKER_USERNAME --password-stdin'
-//             }
+            // Log in to Docker Hub (make sure credentials are stored in Jenkins)
+            withCredentials([usernamePassword(credentialsId: 'dockerhub-credentials', usernameVariable: 'DOCKER_USERNAME', passwordVariable: 'DOCKER_PASSWORD')]) {
+                sh 'echo $DOCKER_PASSWORD | docker login -u $DOCKER_USERNAME --password-stdin'
+            }
 
-//             sh '''
-//                 docker push nourbkh/testingprojectfrontend:latest
-//                 docker push nourbkh/testingprojectbackend:latest
-//             '''
-//     }
-// }
-// }
+            sh '''
+                docker push nourbkh/testingprojectfrontend:latest
+                docker push nourbkh/testingprojectbackend:latest
+            '''
+    }
+}
+}
 
 
 // stage('Update Kubernetes Manifests & Push to Git') {
