@@ -372,6 +372,9 @@ stage('Update Helm Chart & Push to Git') {
 //     sed -i "s|tag: .*|tag: ${IMAGE_TAG}|" k8s-config-repo/helmTestingP/testingprojectHelm/values-backend.yaml
 // """
 
+sh 'grep "tag:" k8s-config-repo/helmTestingP/testingprojectHelm/values-frontend.yaml'
+
+
 sh """
     sed -i 's|\\(tag:\\s*\\)\".*\"|\\1\"${env.IMAGE_TAG}\"|' k8s-config-repo/helmTestingP/testingprojectHelm/values-frontend.yaml
     sed -i 's|tag: \".*\"|tag: \"${env.IMAGE_TAG}\"|' k8s-config-repo/helmTestingP/testingprojectHelm/values-backend.yaml
@@ -382,17 +385,18 @@ sh 'cat k8s-config-repo/helmTestingP/testingprojectHelm/values-frontend.yaml'
 
             // Commit and push the updates
             withCredentials([usernamePassword(credentialsId: GIT_CREDENTIALS_ID, usernameVariable: 'GIT_USER', passwordVariable: 'GIT_PASS')]) {
-                sh '''
-    cd k8s-config-repo
-    git config user.name "Jenkins CI"
-    git config user.email "jenkins@automatisation"
-    git add .
-    if git diff --quiet; then
-        echo "No changes to commit."
-    else
-        git commit -m "Update Helm values with latest image tags"
-        git push https://${GIT_USER}:${GIT_PASS}@github.com/NourBkh/k8s-config-repo.git ${K8S_CONFIG_BRANCH}
-    fi
+sh '''
+cd k8s-config-repo
+git config user.name "Jenkins CI"
+git config user.email "jenkins@automatisation"
+git add .
+
+if [ -n "$(git status --porcelain)" ]; then
+    git commit -m "Update Helm values with latest image tags"
+    git push https://${GIT_USER}:${GIT_PASS}@github.com/NourBkh/k8s-config-repo.git ${K8S_CONFIG_BRANCH}
+else
+    echo "No changes to commit."
+fi
 '''
             }
         }
