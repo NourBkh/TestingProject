@@ -373,9 +373,11 @@ stage('Update Helm Chart & Push to Git') {
 // """
 
 sh """
-    sed -i 's|tag: \".*\"|tag: \"${env.IMAGE_TAG}\"|' k8s-config-repo/helmTestingP/testingprojectHelm/values-frontend.yaml
+    sed -i 's|\\(tag:\\s*\\)\".*\"|\\1\"${env.IMAGE_TAG}\"|' k8s-config-repo/helmTestingP/testingprojectHelm/values-frontend.yaml
     sed -i 's|tag: \".*\"|tag: \"${env.IMAGE_TAG}\"|' k8s-config-repo/helmTestingP/testingprojectHelm/values-backend.yaml
 """
+sh 'cat k8s-config-repo/helmTestingP/testingprojectHelm/values-frontend.yaml'
+
 
 
             // Commit and push the updates
