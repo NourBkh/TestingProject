@@ -360,6 +360,7 @@ stage('Update Helm Chart & Push to Git') {
             '''
 
             // Update values files with the new image tags
+
             // sh '''
             //     sed -i "s|repository: .*testingprojectfrontend.*|repository: ${DOCKER_IMAGE_FRONTEND}|" k8s-config-repo/helmTestingP/testingprojectHelm/values-frontend.yaml
             //     sed -i "s|repository: .*testingprojectbackend.*|repository: ${DOCKER_IMAGE_BACKEND}|" k8s-config-repo/helmTestingP/testingprojectHelm/values-backend.yaml
@@ -371,11 +372,11 @@ stage('Update Helm Chart & Push to Git') {
 //     sed -i "s|tag: .*|tag: ${IMAGE_TAG}|" k8s-config-repo/helmTestingP/testingprojectHelm/values-backend.yaml
 // """
 
+sh """
+    sed -i 's|tag: \".*\"|tag: \"${env.IMAGE_TAG}\"|' k8s-config-repo/helmTestingP/testingprojectHelm/values-frontend.yaml
+    sed -i 's|tag: \".*\"|tag: \"${env.IMAGE_TAG}\"|' k8s-config-repo/helmTestingP/testingprojectHelm/values-backend.yaml
+"""
 
-                    sh """
-                        sed -i "s|tag: .*|tag: ${env.IMAGE_TAG}|" k8s-config-repo/helmTestingP/testingprojectHelm/values-frontend.yaml
-                        sed -i "s|tag: .*|tag: ${env.IMAGE_TAG}|" k8s-config-repo/helmTestingP/testingprojectHelm/values-backend.yaml
-                    """
 
             // Commit and push the updates
             withCredentials([usernamePassword(credentialsId: GIT_CREDENTIALS_ID, usernameVariable: 'GIT_USER', passwordVariable: 'GIT_PASS')]) {
