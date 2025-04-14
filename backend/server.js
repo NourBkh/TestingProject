@@ -9,9 +9,18 @@ app.use(cors());
 app.use(bodyParser.json());
 
 // Connect to MongoDB
-mongoose.connect(process.env.MONGO_URI, { useNewUrlParser: true, useUnifiedTopology: true })
-    .then(() => console.log("MongoDB Connected"))
-    .catch(err => console.log(err));
+
+mongoose.connect(mongoURI)
+  .then(() => {
+    console.log('MongoDB Connected');
+  })
+  .catch(err => {
+    console.log('MongoDB Connection Error:', err);
+  });
+
+// mongoose.connect(process.env.MONGO_URI, { useNewUrlParser: true, useUnifiedTopology: true })
+//     .then(() => console.log("MongoDB Connected"))
+//     .catch(err => console.log(err));
 
 // User Model
 const UserSchema = new mongoose.Schema({ name: String, email: String });
@@ -50,6 +59,6 @@ app.listen(5000, () => console.log("Server running on port 5000"));
 //         res.status(500).send(`Database connection failed: ${err.message}`);
 //     }
 // });
-console.log('Connecting to MongoDB URI:', process.env.MONGO_URI);
+
 
 
