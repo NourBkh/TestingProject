@@ -60,6 +60,14 @@ app.listen(5000, () => console.log("Server running on port 5000"));
 //         res.status(500).send(`Database connection failed: ${err.message}`);
 //     }
 // });
+app.get("/health", async (req, res) => {
+  try {
+      await mongoose.connection.db.command({ ping: 1 });
+      res.status(200).send("Database connection is good!");
+  } catch (err) {
+      res.status(500).send(`Database connection failed: ${err.message}`);
+  }
+});
 
 
 
