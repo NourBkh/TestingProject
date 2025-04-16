@@ -2,7 +2,8 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import "bootstrap/dist/css/bootstrap.min.css";
 
-const API_URL = "http://localhost:5000/users";
+//const API_URL = "http://localhost:5000/users";
+const API_URL = "http://backend.local/users";
 
 function App() {
     const [users, setUsers] = useState([]);
