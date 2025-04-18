@@ -217,23 +217,23 @@ stage('Init') {
         }
 
 
-stage('Build Docker Images') {
-    steps {
-        script {
-            echo "Building Docker images for frontend and backend..."
+// stage('Build Docker Images') {
+//     steps {
+//         script {
+//             echo "Building Docker images for frontend and backend..."
             
-            // sh '''
-            //     docker build -t nourbkh/testingprojectfrontend:${IMAGE_TAG} -f frontend/Dockerfile frontend/
-            //     docker build -t nourbkh/testingprojectbackend:${IMAGE_TAG} -f backend/Dockerfile backend/
-            // '''
+//             // sh '''
+//             //     docker build -t nourbkh/testingprojectfrontend:${IMAGE_TAG} -f frontend/Dockerfile frontend/
+//             //     docker build -t nourbkh/testingprojectbackend:${IMAGE_TAG} -f backend/Dockerfile backend/
+//             // '''
 
-                    sh """
-                        docker build -t ${env.DOCKER_IMAGE_FRONTEND}:${env.IMAGE_TAG} -f frontend/Dockerfile frontend/
-                        docker build -t ${env.DOCKER_IMAGE_BACKEND}:${env.IMAGE_TAG} -f backend/Dockerfile backend/
-                    """
-        }
-    }
-}
+//                     sh """
+//                         docker build -t ${env.DOCKER_IMAGE_FRONTEND}:${env.IMAGE_TAG} -f frontend/Dockerfile frontend/
+//                         docker build -t ${env.DOCKER_IMAGE_BACKEND}:${env.IMAGE_TAG} -f backend/Dockerfile backend/
+//                     """
+//         }
+//     }
+// }
 
 
 // stage('Cleanup Disk Space') {
@@ -289,28 +289,28 @@ stage('Build Docker Images') {
 
 
 
-stage('Push Docker Images to Docker Hub') {
-    steps {
-        script {
-            echo "Pushing Docker images to Docker Hub..."
+// stage('Push Docker Images to Docker Hub') {
+//     steps {
+//         script {
+//             echo "Pushing Docker images to Docker Hub..."
 
-            // Log in to Docker Hub (make sure credentials are stored in Jenkins)
-            withCredentials([usernamePassword(credentialsId: 'dockerhub-credentials', usernameVariable: 'DOCKER_USERNAME', passwordVariable: 'DOCKER_PASSWORD')]) {
-                sh 'echo $DOCKER_PASSWORD | docker login -u $DOCKER_USERNAME --password-stdin'
-            }
+//             // Log in to Docker Hub (make sure credentials are stored in Jenkins)
+//             withCredentials([usernamePassword(credentialsId: 'dockerhub-credentials', usernameVariable: 'DOCKER_USERNAME', passwordVariable: 'DOCKER_PASSWORD')]) {
+//                 sh 'echo $DOCKER_PASSWORD | docker login -u $DOCKER_USERNAME --password-stdin'
+//             }
 
-            // sh '''
-            //     docker push nourbkh/testingprojectfrontend:${IMAGE_TAG}
-            //     docker push nourbkh/testingprojectbackend:${IMAGE_TAG}
-            // '''
+//             // sh '''
+//             //     docker push nourbkh/testingprojectfrontend:${IMAGE_TAG}
+//             //     docker push nourbkh/testingprojectbackend:${IMAGE_TAG}
+//             // '''
 
-                    sh """
-                        docker push ${env.DOCKER_IMAGE_FRONTEND}:${env.IMAGE_TAG}
-                        docker push ${env.DOCKER_IMAGE_BACKEND}:${env.IMAGE_TAG}
-                    """
-    }
-}
-}
+//                     sh """
+//                         docker push ${env.DOCKER_IMAGE_FRONTEND}:${env.IMAGE_TAG}
+//                         docker push ${env.DOCKER_IMAGE_BACKEND}:${env.IMAGE_TAG}
+//                     """
+//     }
+// }
+// }
 
 
 // stage('Update Kubernetes Manifests & Push to Git') {
@@ -348,60 +348,50 @@ stage('Push Docker Images to Docker Hub') {
 
 
 
-stage('Update Helm Chart & Push to Git') {
-    steps {
-        script {
-            echo "Updating Helm values with the new Docker images..."
+// stage('Update Helm Chart & Push to Git') {
+//     steps {
+//         script {
+//             echo "Updating Helm values with the new Docker images..."
 
-            // Clone the Helm config repo
-            sh '''
-                rm -rf k8s-config-repo
-                git clone -b ${K8S_CONFIG_BRANCH} ${K8S_CONFIG_REPO_URL} k8s-config-repo
-            '''
+//             // Clone the Helm config repo
+//             sh '''
+//                 rm -rf k8s-config-repo
+//                 git clone -b ${K8S_CONFIG_BRANCH} ${K8S_CONFIG_REPO_URL} k8s-config-repo
+//             '''
 
-            // Update values files with the new image tags
-
-            // sh '''
-            //     sed -i "s|repository: .*testingprojectfrontend.*|repository: ${DOCKER_IMAGE_FRONTEND}|" k8s-config-repo/helmTestingP/testingprojectHelm/values-frontend.yaml
-            //     sed -i "s|repository: .*testingprojectbackend.*|repository: ${DOCKER_IMAGE_BACKEND}|" k8s-config-repo/helmTestingP/testingprojectHelm/values-backend.yaml
-            // '''
+//             // Update values files with the new image tags
 
 
-//             sh """
-//     sed -i "s|tag: .*|tag: ${IMAGE_TAG}|" k8s-config-repo/helmTestingP/testingprojectHelm/values-frontend.yaml
-//     sed -i "s|tag: .*|tag: ${IMAGE_TAG}|" k8s-config-repo/helmTestingP/testingprojectHelm/values-backend.yaml
+// sh 'grep "tag:" k8s-config-repo/helmTestingP/testingprojectHelm/values-frontend.yaml'
+
+
+// sh """
+//     sed -i 's|\\(tag:\\s*\\)\".*\"|\\1\"${env.IMAGE_TAG}\"|' k8s-config-repo/helmTestingP/testingprojectHelm/values-frontend.yaml
+//     sed -i 's|tag: \".*\"|tag: \"${env.IMAGE_TAG}\"|' k8s-config-repo/helmTestingP/testingprojectHelm/values-backend.yaml
 // """
-
-sh 'grep "tag:" k8s-config-repo/helmTestingP/testingprojectHelm/values-frontend.yaml'
-
-
-sh """
-    sed -i 's|\\(tag:\\s*\\)\".*\"|\\1\"${env.IMAGE_TAG}\"|' k8s-config-repo/helmTestingP/testingprojectHelm/values-frontend.yaml
-    sed -i 's|tag: \".*\"|tag: \"${env.IMAGE_TAG}\"|' k8s-config-repo/helmTestingP/testingprojectHelm/values-backend.yaml
-"""
-sh 'cat k8s-config-repo/helmTestingP/testingprojectHelm/values-frontend.yaml'
+// sh 'cat k8s-config-repo/helmTestingP/testingprojectHelm/values-frontend.yaml'
 
 
 
-            // Commit and push the updates
-            withCredentials([usernamePassword(credentialsId: GIT_CREDENTIALS_ID, usernameVariable: 'GIT_USER', passwordVariable: 'GIT_PASS')]) {
-sh '''
-cd k8s-config-repo
-git config user.name "Jenkins CI"
-git config user.email "jenkins@automatisation"
-git add .
+//             // Commit and push the updates
+//             withCredentials([usernamePassword(credentialsId: GIT_CREDENTIALS_ID, usernameVariable: 'GIT_USER', passwordVariable: 'GIT_PASS')]) {
+// sh '''
+// cd k8s-config-repo
+// git config user.name "Jenkins CI"
+// git config user.email "jenkins@automatisation"
+// git add .
 
-if [ -n "$(git status --porcelain)" ]; then
-    git commit -m "Update Helm values with latest image tags"
-    git push https://${GIT_USER}:${GIT_PASS}@github.com/NourBkh/k8s-config-repo.git ${K8S_CONFIG_BRANCH}
-else  
-    echo "No changes to commit."
-fi
-'''
-            }
-        }
-    }
-}
+// if [ -n "$(git status --porcelain)" ]; then
+//     git commit -m "Update Helm values with latest image tags"
+//     git push https://${GIT_USER}:${GIT_PASS}@github.com/NourBkh/k8s-config-repo.git ${K8S_CONFIG_BRANCH}
+// else  
+//     echo "No changes to commit."
+// fi
+// '''
+//             }
+//         }
+//     }
+// }
 
 
 
