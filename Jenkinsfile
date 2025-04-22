@@ -254,19 +254,20 @@ stage('Trivy Scan') {
         script {
             echo "Running Trivy scan on Docker images..."
             sh '''
-                # Set custom cache directory
-                export TRIVY_CACHE_DIR="/var/lib/trivy"
+                # Set custom cache directory in workspace
+                export TRIVY_CACHE_DIR="$WORKSPACE/.trivycache"
                 mkdir -p $TRIVY_CACHE_DIR
 
-                # Scan frontend image with minimal mode
+                # Scan frontend image
                 trivy image --exit-code 1 --severity HIGH,CRITICAL --no-progress --scanners vuln --cache-dir $TRIVY_CACHE_DIR nourbkh/testingprojectfrontend:latest || echo "Vulnerabilities found in frontend image!"
 
-                # Scan backend image with minimal mode
+                # Scan backend image
                 trivy image --exit-code 1 --severity HIGH,CRITICAL --no-progress --scanners vuln --cache-dir $TRIVY_CACHE_DIR nourbkh/testingprojectbackend:latest || echo "Vulnerabilities found in backend image!"
             '''
         }
     }
 }
+
 
 
 
@@ -438,7 +439,7 @@ post {
         // Optionally, you can send a notification regardless of the build result (success, failure, etc.)
         slackSend (
             channel: SLACK_CHANNEL, 
-            message: "❌ ✅ Build completed for ${env.JOB_NAME} - ${env.BUILD_URL}",
+            message: "Build completed for ${env.JOB_NAME} - ${env.BUILD_URL}",
             tokenCredentialId: 'pfe-za54358'
         )
     }
