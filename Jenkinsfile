@@ -411,6 +411,12 @@ post {
             message: "✅ Build and tests passed successfully for ${env.JOB_NAME} - ${env.BUILD_URL}",
             tokenCredentialId: 'pfe-za54358' // Make sure the token is valid and exists in Jenkins credentials
         )
+        
+        // Send success notification to Slack for deployment
+        slackSend (
+            color: '#36a64f', 
+            message: "✅ Deployment succeeded for *${env.JOB_NAME}* - Build #${env.BUILD_NUMBER} \n🔗 ${env.BUILD_URL}"
+        )
     }
 
     failure {
@@ -419,6 +425,12 @@ post {
             channel: SLACK_CHANNEL, 
             message: "❌ Build or tests failed for ${env.JOB_NAME} - ${env.BUILD_URL}",
             tokenCredentialId: 'pfe-za54358'
+        )
+        
+        // Send failure notification to Slack for deployment
+        slackSend (
+            color: '#FF0000', 
+            message: "❌ Deployment failed for *${env.JOB_NAME}* - Build #${env.BUILD_NUMBER} \n🔗 ${env.BUILD_URL}"
         )
     }
 
@@ -430,23 +442,6 @@ post {
             tokenCredentialId: 'pfe-za54358'
         )
     }
-
-
-    success {
-      slackSend (
-        color: '#36a64f', 
-        message: "✅ Deployment succeeded for *${env.JOB_NAME}* - Build #${env.BUILD_NUMBER} \n🔗 ${env.BUILD_URL}"
-      )
-    }
-
-    failure {
-      slackSend (
-        color: '#FF0000', 
-        message: "❌ Deployment failed for *${env.JOB_NAME}* - Build #${env.BUILD_NUMBER} \n🔗 ${env.BUILD_URL}"
-      )
-    }
-
-
 }
 
 
