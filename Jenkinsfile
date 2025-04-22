@@ -258,6 +258,9 @@ stage('Trivy Scan') {
                 export TRIVY_CACHE_DIR="$WORKSPACE/.trivycache"
                 mkdir -p $TRIVY_CACHE_DIR
 
+                # Increase timeout to 15 minutes
+                TIMEOUT="15m"
+
                 # Scan frontend image
                 trivy image --exit-code 1 --severity HIGH,CRITICAL --no-progress --scanners vuln --cache-dir $TRIVY_CACHE_DIR nourbkh/testingprojectfrontend:latest || echo "Vulnerabilities found in frontend image!"
 
