@@ -19,7 +19,7 @@ pipeline {
         DOCKER_IMAGE_FRONTEND = 'nourbkh/testingprojectfrontend'
         DOCKER_IMAGE_BACKEND = 'nourbkh/testingprojectbackend'
         GIT_CREDENTIALS_ID = 'TestingProject'  
-       // IMAGE_TAG = sh(script: 'git rev-parse --short HEAD', returnStdout: true).trim()
+       
 
     }
 
@@ -289,28 +289,28 @@ stage('Build Docker Images') {
 
 
 
-stage('Push Docker Images to Docker Hub') {
-    steps {
-        script {
-            echo "Pushing Docker images to Docker Hub..."
+// stage('Push Docker Images to Docker Hub') {
+//     steps {
+//         script {
+//             echo "Pushing Docker images to Docker Hub..."
 
-            // Log in to Docker Hub (make sure credentials are stored in Jenkins)
-            withCredentials([usernamePassword(credentialsId: 'dockerhub-credentials', usernameVariable: 'DOCKER_USERNAME', passwordVariable: 'DOCKER_PASSWORD')]) {
-                sh 'echo $DOCKER_PASSWORD | docker login -u $DOCKER_USERNAME --password-stdin'
-            }
+//             // Log in to Docker Hub (make sure credentials are stored in Jenkins)
+//             withCredentials([usernamePassword(credentialsId: 'dockerhub-credentials', usernameVariable: 'DOCKER_USERNAME', passwordVariable: 'DOCKER_PASSWORD')]) {
+//                 sh 'echo $DOCKER_PASSWORD | docker login -u $DOCKER_USERNAME --password-stdin'
+//             }
 
-            // sh '''
-            //     docker push nourbkh/testingprojectfrontend:${IMAGE_TAG}
-            //     docker push nourbkh/testingprojectbackend:${IMAGE_TAG}
-            // '''
+//             // sh '''
+//             //     docker push nourbkh/testingprojectfrontend:${IMAGE_TAG}
+//             //     docker push nourbkh/testingprojectbackend:${IMAGE_TAG}
+//             // '''
 
-                    sh """
-                        docker push ${env.DOCKER_IMAGE_FRONTEND}:${env.IMAGE_TAG}
-                        docker push ${env.DOCKER_IMAGE_BACKEND}:${env.IMAGE_TAG}
-                    """
-    }
-}
-}
+//                     sh """
+//                         docker push ${env.DOCKER_IMAGE_FRONTEND}:${env.IMAGE_TAG}
+//                         docker push ${env.DOCKER_IMAGE_BACKEND}:${env.IMAGE_TAG}
+//                     """
+//     }
+// }
+// }
 
 
 // stage('Update Kubernetes Manifests & Push to Git') {
@@ -422,15 +422,6 @@ post {
         )
     }
 
-    unstable {
-        // Send notification for unstable builds (e.g., tests partially failed)
-        slackSend (
-            channel: SLACK_CHANNEL, 
-            message: "Build is unstable for ${env.JOB_NAME} - ${env.BUILD_URL}",
-            tokenCredentialId: 'pfe-za54358'
-        )
-    }
-
     always {
         // Optionally, you can send a notification regardless of the build result (success, failure, etc.)
         slackSend (
@@ -439,6 +430,23 @@ post {
             tokenCredentialId: 'pfe-za54358'
         )
     }
+
+
+    success {
+      slackSend (
+        color: '#36a64f', 
+        message: "✅ Deployment succeeded for *${env.JOB_NAME}* - Build #${env.BUILD_NUMBER} \n🔗 ${env.BUILD_URL}"
+      )
+    }
+
+    failure {
+      slackSend (
+        color: '#FF0000', 
+        message: "❌ Deployment failed for *${env.JOB_NAME}* - Build #${env.BUILD_NUMBER} \n🔗 ${env.BUILD_URL}"
+      )
+    }
+
+
 }
 
 
