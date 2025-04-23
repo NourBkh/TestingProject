@@ -150,11 +150,11 @@ pipeline {
       
  
 
-        // stage('Run Selenium UI Test') {
-        //     steps {
-        //         sh 'npm test || exit 1'  // Fail pipeline if UI test fails
-        //     }
-        // }
+        stage('Run Selenium UI Test') {
+            steps {
+                sh 'npm test || exit 1'  // Fail pipeline if UI test fails
+            }
+        }
 
 
 
@@ -329,28 +329,28 @@ stage('Trivy Scan') {
 
 
 
-// stage('Push Docker Images to Docker Hub') {
-//     steps {
-//         script {
-//             echo "Pushing Docker images to Docker Hub..."
+stage('Push Docker Images to Docker Hub') {
+    steps {
+        script {
+            echo "Pushing Docker images to Docker Hub..."
 
-//             // Log in to Docker Hub (make sure credentials are stored in Jenkins)
-//             withCredentials([usernamePassword(credentialsId: 'dockerhub-credentials', usernameVariable: 'DOCKER_USERNAME', passwordVariable: 'DOCKER_PASSWORD')]) {
-//                 sh 'echo $DOCKER_PASSWORD | docker login -u $DOCKER_USERNAME --password-stdin'
-//             }
+            // Log in to Docker Hub (make sure credentials are stored in Jenkins)
+            withCredentials([usernamePassword(credentialsId: 'dockerhub-credentials', usernameVariable: 'DOCKER_USERNAME', passwordVariable: 'DOCKER_PASSWORD')]) {
+                sh 'echo $DOCKER_PASSWORD | docker login -u $DOCKER_USERNAME --password-stdin'
+            }
 
-//             // sh '''
-//             //     docker push nourbkh/testingprojectfrontend:${IMAGE_TAG}
-//             //     docker push nourbkh/testingprojectbackend:${IMAGE_TAG}
-//             // '''
+            // sh '''
+            //     docker push nourbkh/testingprojectfrontend:${IMAGE_TAG}
+            //     docker push nourbkh/testingprojectbackend:${IMAGE_TAG}
+            // '''
 
-//                     sh """
-//                         docker push ${env.DOCKER_IMAGE_FRONTEND}:${env.IMAGE_TAG}
-//                         docker push ${env.DOCKER_IMAGE_BACKEND}:${env.IMAGE_TAG}
-//                     """
-//     }
-// }
-// }
+                    sh """
+                        docker push ${env.DOCKER_IMAGE_FRONTEND}:${env.IMAGE_TAG}
+                        docker push ${env.DOCKER_IMAGE_BACKEND}:${env.IMAGE_TAG}
+                    """
+    }
+}
+}
 
 
 // stage('Update Kubernetes Manifests & Push to Git') {
