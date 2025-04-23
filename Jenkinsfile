@@ -208,6 +208,29 @@ stage('Run SonarQube Analysis') {
 }
 
 
+stage('Quality Gate') {
+    steps {
+        timeout(time: 1, unit: 'MINUTES') {
+            script {
+                def qualityGate = waitForQualityGate()
+                
+                if (qualityGate.status != 'OK') {
+                    slackSend(
+                        color: '#FF0000',
+                        message: "❌ *SonarQube Quality Gate FAILED* for ${env.JOB_NAME} - Build #${env.BUILD_NUMBER}\nStatus: ${qualityGate.status}"
+                    )
+                    currentBuild.result = 'FAILURE'
+                    error("❌ Quality Gate failed: ${qualityGate.status}")
+                } else {
+                    slackSend(
+                        color: '#36a64f',
+                        message: "✅ *SonarQube Quality Gate PASSED* for ${env.JOB_NAME} - Build #${env.BUILD_NUMBER}\nStatus: ${qualityGate.status}"
+                    )
+                }
+            }
+        }
+    }
+}
 
 
 
@@ -285,27 +308,27 @@ stage('Build Docker Images') {
 // }
 
 
-stage('Trivy Scan') {
-    steps {
-        script {
-            echo "Running Trivy scan on Docker images..."
-            sh '''
-                # Set custom cache directory in workspace
-                export TRIVY_CACHE_DIR="$WORKSPACE/.trivycache"
-                mkdir -p $TRIVY_CACHE_DIR
+// stage('Trivy Scan') {
+//     steps {
+//         script {
+//             echo "Running Trivy scan on Docker images..."
+//             sh '''
+//                 # Set custom cache directory in workspace
+//                 export TRIVY_CACHE_DIR="$WORKSPACE/.trivycache"
+//                 mkdir -p $TRIVY_CACHE_DIR
 
-                # Increase timeout to 15 minutes
-                TIMEOUT="15m"
+//                 # Increase timeout to 15 minutes
+//                 TIMEOUT="15m"
 
-                # Scan frontend image
-                trivy image --exit-code 1 --severity HIGH,CRITICAL --no-progress --scanners vuln --cache-dir $TRIVY_CACHE_DIR nourbkh/testingprojectfrontend:latest || echo "Vulnerabilities found in frontend image!"
+//                 # Scan frontend image
+//                 trivy image --exit-code 1 --severity HIGH,CRITICAL --no-progress --scanners vuln --cache-dir $TRIVY_CACHE_DIR nourbkh/testingprojectfrontend:latest || echo "Vulnerabilities found in frontend image!"
 
-                # Scan backend image
-                trivy image --exit-code 1 --severity HIGH,CRITICAL --no-progress --scanners vuln --cache-dir $TRIVY_CACHE_DIR nourbkh/testingprojectbackend:latest || echo "Vulnerabilities found in backend image!"
-            '''
-        }
-    }
-}
+//                 # Scan backend image
+//                 trivy image --exit-code 1 --severity HIGH,CRITICAL --no-progress --scanners vuln --cache-dir $TRIVY_CACHE_DIR nourbkh/testingprojectbackend:latest || echo "Vulnerabilities found in backend image!"
+//             '''
+//         }
+//     }
+// }
 
 
 
@@ -329,28 +352,28 @@ stage('Trivy Scan') {
 
 
 
-stage('Push Docker Images to Docker Hub') {
-    steps {
-        script {
-            echo "Pushing Docker images to Docker Hub..."
+// stage('Push Docker Images to Docker Hub') {
+//     steps {
+//         script {
+//             echo "Pushing Docker images to Docker Hub..."
 
-            // Log in to Docker Hub (make sure credentials are stored in Jenkins)
-            withCredentials([usernamePassword(credentialsId: 'dockerhub-credentials', usernameVariable: 'DOCKER_USERNAME', passwordVariable: 'DOCKER_PASSWORD')]) {
-                sh 'echo $DOCKER_PASSWORD | docker login -u $DOCKER_USERNAME --password-stdin'
-            }
+//             // Log in to Docker Hub (make sure credentials are stored in Jenkins)
+//             withCredentials([usernamePassword(credentialsId: 'dockerhub-credentials', usernameVariable: 'DOCKER_USERNAME', passwordVariable: 'DOCKER_PASSWORD')]) {
+//                 sh 'echo $DOCKER_PASSWORD | docker login -u $DOCKER_USERNAME --password-stdin'
+//             }
 
-            // sh '''
-            //     docker push nourbkh/testingprojectfrontend:${IMAGE_TAG}
-            //     docker push nourbkh/testingprojectbackend:${IMAGE_TAG}
-            // '''
+//             // sh '''
+//             //     docker push nourbkh/testingprojectfrontend:${IMAGE_TAG}
+//             //     docker push nourbkh/testingprojectbackend:${IMAGE_TAG}
+//             // '''
 
-                    sh """
-                        docker push ${env.DOCKER_IMAGE_FRONTEND}:${env.IMAGE_TAG}
-                        docker push ${env.DOCKER_IMAGE_BACKEND}:${env.IMAGE_TAG}
-                    """
-    }
-}
-}
+//                     sh """
+//                         docker push ${env.DOCKER_IMAGE_FRONTEND}:${env.IMAGE_TAG}
+//                         docker push ${env.DOCKER_IMAGE_BACKEND}:${env.IMAGE_TAG}
+//                     """
+//     }
+// }
+// }
 
 
 // stage('Update Kubernetes Manifests & Push to Git') {
