@@ -191,6 +191,7 @@ stage('Run SonarQube Analysis') {
                     ]
                 ]]
             ]) {
+                withSonarQubeEnv('SonarQube') {
                 sh '''
                     # Install SonarQube scanner locally
                     npm install sonarqube-scanner
@@ -202,6 +203,7 @@ stage('Run SonarQube Analysis') {
                         -Dsonar.host.url=${SONARQUBE_URL} \
                         -Dsonar.login=${SONARQUBE_TOKEN}
                 '''
+                }
             }
         }
     }
