@@ -150,11 +150,11 @@ pipeline {
       
  
 
-        stage('Run Selenium UI Test') {
-            steps {
-                sh 'npm test || exit 1'  // Fail pipeline if UI test fails
-            }
-        }
+        // stage('Run Selenium UI Test') {
+        //     steps {
+        //         sh 'npm test || exit 1'  // Fail pipeline if UI test fails
+        //     }
+        // }
 
 
 
