@@ -6,7 +6,7 @@ pipeline {
         CHROMEDRIVER_BIN = '/usr/local/bin/chromedriver'
         PATH = "/usr/local/bin:${env.PATH}"
         SONARQUBE_URL = 'http://localhost:9000'
-        SONARQUBE_TOKEN = credentials('sonar')  
+        //SONARQUBE_TOKEN = credentials('sonar')  
         SLACK_CHANNEL = '#build'
         //DOCKER_REGISTRY_URL = 'https://hub.docker.com/repository/docker/nourbkh/testingproject/general'
         //  DOCKER_USERNAME = credentials('dockerhub')
@@ -158,24 +158,60 @@ pipeline {
 
 
 
-  stage('Run SonarQube Analysis') {
+//   stage('Run SonarQube Analysis') {
+//     steps {
+//         script {
+//             echo 'Running SonarQube Analysis...'
+//             sh '''
+//                 # Install SonarQube scanner locally
+//                 npm install sonarqube-scanner
+
+//                 # Run SonarQube analysis using the locally installed scanner
+//                 npx sonar-scanner \
+//                     -Dsonar.projectKey=TestingProject \
+//                     -Dsonar.sources=. \
+//                     -Dsonar.host.url=${SONARQUBE_URL} \
+//                     -Dsonar.login=${SONARQUBE_TOKEN}
+//             '''
+//         }
+//     }
+// }
+
+
+
+stage('Run SonarQube Analysis') {
     steps {
         script {
             echo 'Running SonarQube Analysis...'
-            sh '''
-                # Install SonarQube scanner locally
-                npm install sonarqube-scanner
+            withVault([
+                vaultSecrets: [[
+                    path: 'kv/sonarqube-demo',
+                    secretValues: [
+                        [envVar: 'SONARQUBE_TOKEN', vaultKey: 'token']
+                    ]
+                ]]
+            ]) {
+                sh '''
+                    # Install SonarQube scanner locally
+                    npm install sonarqube-scanner
 
-                # Run SonarQube analysis using the locally installed scanner
-                npx sonar-scanner \
-                    -Dsonar.projectKey=TestingProject \
-                    -Dsonar.sources=. \
-                    -Dsonar.host.url=${SONARQUBE_URL} \
-                    -Dsonar.login=${SONARQUBE_TOKEN}
-            '''
+                    # Run SonarQube analysis using the locally installed scanner
+                    npx sonar-scanner \
+                        -Dsonar.projectKey=TestingProject \
+                        -Dsonar.sources=. \
+                        -Dsonar.host.url=${SONARQUBE_URL} \
+                        -Dsonar.login=${SONARQUBE_TOKEN}
+                '''
+            }
         }
     }
 }
+
+
+
+
+
+
 
 // stage('Start MongoDB') {
 //     steps {
