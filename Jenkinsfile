@@ -158,7 +158,7 @@ pipeline {
 
 
 
-//   stage('Run SonarQube Analysis') {
+// 1  stage('Run SonarQube Analysis') {
 //     steps {
 //         script {
 //             echo 'Running SonarQube Analysis...'
@@ -179,35 +179,35 @@ pipeline {
 
 
 
-stage('Run SonarQube Analysis') {
-    steps {
-        script {
-            echo 'Running SonarQube Analysis...'
-            withVault([
-                vaultSecrets: [[
-                    path: 'kv/sonarqube-demo',
-                    secretValues: [
-                        [envVar: 'SONARQUBE_TOKEN', vaultKey: 'token']
-                    ]
-                ]]
-            ]) {
-                withSonarQubeEnv('SonarQube') {
-                sh '''
-                    # Install SonarQube scanner locally
-                    npm install sonarqube-scanner
+//2s stage('Run SonarQube Analysis') {
+//     steps {
+//         script {
+//             echo 'Running SonarQube Analysis...'
+//             withVault([
+//                 vaultSecrets: [[
+//                     path: 'kv/sonarqube-demo',
+//                     secretValues: [
+//                         [envVar: 'SONARQUBE_TOKEN', vaultKey: 'token']
+//                     ]
+//                 ]]
+//             ]) {
+//                 withSonarQubeEnv('SonarQube') {
+//                 sh '''
+//                     # Install SonarQube scanner locally
+//                     npm install sonarqube-scanner
 
-                    # Run SonarQube analysis using the locally installed scanner
-                    npx sonar-scanner \
-                        -Dsonar.projectKey=TestingProject \
-                        -Dsonar.sources=. \
-                        -Dsonar.host.url=${SONARQUBE_URL} \
-                        -Dsonar.login=${SONARQUBE_TOKEN}
-                '''
-                }
-            }
-        }
-    }
-}
+//                     # Run SonarQube analysis using the locally installed scanner
+//                     npx sonar-scanner \
+//                         -Dsonar.projectKey=TestingProject \
+//                         -Dsonar.sources=. \
+//                         -Dsonar.host.url=${SONARQUBE_URL} \
+//                         -Dsonar.login=${SONARQUBE_TOKEN}
+//                 '''
+//                 }
+//             }
+//         }
+//     }
+// }
 
 
 // stage('Quality Gate') {
