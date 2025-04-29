@@ -354,28 +354,28 @@ stage('Build Docker Images') {
 
 
 
-// stage('Push Docker Images to Docker Hub') {
-//     steps {
-//         script {
-//             echo "Pushing Docker images to Docker Hub..."
+stage('Push Docker Images to Docker Hub') {
+    steps {
+        script {
+            echo "Pushing Docker images to Docker Hub..."
 
-//             // Log in to Docker Hub (make sure credentials are stored in Jenkins)
-//             withCredentials([usernamePassword(credentialsId: 'dockerhub-credentials', usernameVariable: 'DOCKER_USERNAME', passwordVariable: 'DOCKER_PASSWORD')]) {
-//                 sh 'echo $DOCKER_PASSWORD | docker login -u $DOCKER_USERNAME --password-stdin'
-//             }
+            // Log in to Docker Hub (make sure credentials are stored in Jenkins)
+            withCredentials([usernamePassword(credentialsId: 'dockerhub-credentials', usernameVariable: 'DOCKER_USERNAME', passwordVariable: 'DOCKER_PASSWORD')]) {
+                sh 'echo $DOCKER_PASSWORD | docker login -u $DOCKER_USERNAME --password-stdin'
+            }
 
-//             // sh '''
-//             //     docker push nourbkh/testingprojectfrontend:${IMAGE_TAG}
-//             //     docker push nourbkh/testingprojectbackend:${IMAGE_TAG}
-//             // '''
+            // sh '''
+            //     docker push nourbkh/testingprojectfrontend:${IMAGE_TAG}
+            //     docker push nourbkh/testingprojectbackend:${IMAGE_TAG}
+            // '''
 
-//                     sh """
-//                         docker push ${env.DOCKER_IMAGE_FRONTEND}:${env.IMAGE_TAG}
-//                         docker push ${env.DOCKER_IMAGE_BACKEND}:${env.IMAGE_TAG}
-//                     """
-//     }
-// }
-// }
+                    sh """
+                        docker push ${env.DOCKER_IMAGE_FRONTEND}:${env.IMAGE_TAG}
+                        docker push ${env.DOCKER_IMAGE_BACKEND}:${env.IMAGE_TAG}
+                    """
+    }
+}
+}
 
 
 // stage('Update Kubernetes Manifests & Push to Git') {
@@ -427,14 +427,31 @@ stage('Update Helm Chart & Push to Git') {
             // Update values files with the new image tags
 
 
-sh 'grep "tag:" k8s-config-repo/helmTestingP/testingprojectHelm/values-frontend.yaml'
+// sh 'grep "tag:" k8s-config-repo/helmTestingP/testingprojectHelm/values-frontend.yaml'
+
+// sh """
+//     sed -i 's|\\(tag:\\s*\\)\".*\"|\\1\"${env.IMAGE_TAG}\"|' k8s-config-repo/helmTestingP/testingprojectHelm/values-frontend.yaml
+//     sed -i 's|tag: \".*\"|tag: \"${env.IMAGE_TAG}\"|' k8s-config-repo/helmTestingP/testingprojectHelm/values-backend.yaml
+// """
+
+// sh 'cat k8s-config-repo/helmTestingP/testingprojectHelm/values-frontend.yaml'
 
 
-sh """
-    sed -i 's|\\(tag:\\s*\\)\".*\"|\\1\"${env.IMAGE_TAG}\"|' k8s-config-repo/helmTestingP/testingprojectHelm/values-frontend.yaml
-    sed -i 's|tag: \".*\"|tag: \"${env.IMAGE_TAG}\"|' k8s-config-repo/helmTestingP/testingprojectHelm/values-backend.yaml
-"""
-sh 'cat k8s-config-repo/helmTestingP/testingprojectHelm/values-frontend.yaml'
+// Update values files with the new image tags in the single values.yaml file
+            sh """
+                # Check the current tag for frontend and backend in the values.yaml file
+                grep "tag:" k8s-config-repo/azHelmDeployment/values.yaml
+            """
+
+            // Use sed to replace the tag for frontend and backend in the values.yaml file
+            sh """
+                sed -i 's|\\(tag:\\s*frontend.*\\)\".*\"|\\1\"${env.IMAGE_TAG}\"|' k8s-config-repo/azHelmDeployment/values.yaml
+                sed -i 's|\\(tag:\\s*backend.*\\)\".*\"|\\1\"${env.IMAGE_TAG}\"|' k8s-config-repo/azHelmDeployment/values.yaml
+            """
+
+            // Print the updated values file to verify
+            sh 'cat k8s-config-repo/azHelmDeployment/values.yaml'
+
 
 
 
