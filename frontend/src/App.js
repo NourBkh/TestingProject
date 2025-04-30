@@ -3,7 +3,8 @@ import axios from "axios";
 import "bootstrap/dist/css/bootstrap.min.css";
 
 //const API_URL = "http://localhost:5000/users";
-const API_URL = "http://backend.local/users";
+// const API_URL = "http://backend.local/users";
+const API_URL = "http://backend-service.azpfe-app.svc.cluster.local:5000/users";
 
 function App() {
     const [users, setUsers] = useState([]);
