@@ -32,23 +32,23 @@ const UserSchema = new mongoose.Schema({ name: String, email: String });
 const User = mongoose.model("User", UserSchema);
 
 // Routes
-app.get("/users", async (req, res) => {
+app.get("/api/users", async (req, res) => {
     const users = await User.find();
     res.json(users);
 });
 
-app.post("/users", async (req, res) => {
+app.post("/api//users", async (req, res) => {
     const user = new User(req.body);
     await user.save();
     res.json(user);
 });
 
-app.put("/users/:id", async (req, res) => {
+app.put("/api/users/:id", async (req, res) => {
     const user = await User.findByIdAndUpdate(req.params.id, req.body, { new: true });
     res.json(user);
 });
 
-app.delete("/users/:id", async (req, res) => {
+app.delete("/api/users/:id", async (req, res) => {
     await User.findByIdAndDelete(req.params.id);
     res.json({ message: "User deleted" });
 });

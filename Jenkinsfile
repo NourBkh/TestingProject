@@ -445,8 +445,8 @@ stage('Update Helm Chart & Push to Git') {
 
             // Use sed to replace the tag for frontend and backend in the values.yaml file
             sh """
-                sed -i 's|\\(tag:\\s*frontend\\s*:\\s*\".*\"\\)|\\1\"${env.IMAGE_TAG}\"|' k8s-config-repo/azHelmDeployment/values.yaml
-                sed -i 's|\\(tag:\\s*backend\\s*:\\s*\".*\"\\)|\\1\"${env.IMAGE_TAG}\"|' k8s-config-repo/azHelmDeployment/values.yaml
+                sed -i '/^backend:/,/^[^ ]/ s|^\\( *tag: *\\)\".*\"|\\1\"${IMAGE_TAG}\"|' k8s-config-repo/azHelmDeployment/values.yaml
+                sed -i '/^frontend:/,/^[^ ]/ s|^\\( *tag: *\\)\".*\"|\\1\"${IMAGE_TAG}\"|' k8s-config-repo/azHelmDeployment/values.yaml
             """
 
             // Print the updated values file to verify
