@@ -37,7 +37,7 @@ app.get("/api/users", async (req, res) => {
     res.json(users);
 });
 
-app.post("/api//users", async (req, res) => {
+app.post("/api/users", async (req, res) => {
     const user = new User(req.body);
     await user.save();
     res.json(user);
