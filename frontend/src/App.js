@@ -8,7 +8,7 @@ import "bootstrap/dist/css/bootstrap.min.css";
 // if you Want it to work both locally and in the cluster and And set REACT_APP_API_URL=http://backend-service:5000/api/users in your Docker build or Kubernetes config.
 //const API_URL = process.env.REACT_APP_API_URL || "/api/users"; 
 //const API_URL = "http://backend-service:5000/api/users";
-const API_URL = "/api/users";
+const API_URL = "/api";
 
 function App() {
     const [users, setUsers] = useState([]);

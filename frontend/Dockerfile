@@ -13,6 +13,9 @@ RUN npm install
 # Copy the rest of the application files into the container
 COPY . .
 
+# Set build-time environment variable (can be overridden via `--build-arg`)
+ARG REACT_APP_API_URL=/api
+ENV REACT_APP_API_URL=$REACT_APP_API_URL
 
 # Build the React app for production
 RUN npm run build
