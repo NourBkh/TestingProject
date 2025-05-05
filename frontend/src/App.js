@@ -20,6 +20,7 @@ function App() {
 
     const fetchUsers = async () => {
         const res = await axios.get(API_URL);
+        console.log("Fetched users:", res.data);
         setUsers(res.data);
     };
 
