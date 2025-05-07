@@ -8,7 +8,7 @@ import "bootstrap/dist/css/bootstrap.min.css";
 // if you Want it to work both locally and in the cluster and And set REACT_APP_API_URL=http://backend-service:5000/api/users in your Docker build or Kubernetes config.
 //const API_URL = process.env.REACT_APP_API_URL || "/api/users"; 
 //const API_URL = "http://backend-service:5000/api/users";
-const API_URL = "/api";
+const API_URL = "/api/users";
 
 function App() {
     const [users, setUsers] = useState([]);
@@ -17,10 +17,12 @@ function App() {
     const [editingId, setEditingId] = useState(null);
 
     useEffect(() => {
+        console.log("useEffect triggered on mount");
         fetchUsers();
     }, []);
 
     const fetchUsers = async () => {
+        console.log("Fetching users...");
         const res = await axios.get(API_URL);
         console.log("Fetched users:", res.data);
         setUsers(res.data);
