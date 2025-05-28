@@ -78,7 +78,7 @@ pipeline {
         dir('frontend') {
             sh '''
                 npm install
-                chmod +x node_modules/.bin/react-scripts
+                
                 npm install -g serve
             '''
         }
