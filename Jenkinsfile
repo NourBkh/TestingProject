@@ -79,6 +79,7 @@ pipeline {
             sh '''
                 npm install
                 chmod +x node_modules/.bin/react-scripts
+                npm install -g serve
             '''
         }
     }
@@ -100,7 +101,7 @@ pipeline {
         dir('frontend') {
             sh '''
                 chmod +x node_modules/.bin/react-scripts
-                nohup npm start -- --silent > frontend.log 2>&1 &
+                npx serve -s build --port 3000 > frontend.log 2>&1 &
             '''
         }
         sh 'sleep 10'
