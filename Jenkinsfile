@@ -8,12 +8,6 @@ pipeline {
         SONARQUBE_URL = 'http://localhost:9000'
         //SONARQUBE_TOKEN = credentials('sonar')  
         SLACK_CHANNEL = '#build'
-        //DOCKER_REGISTRY_URL = 'https://hub.docker.com/repository/docker/nourbkh/testingproject/general'
-        //  DOCKER_USERNAME = credentials('dockerhub')
-        //  DOCKER_PASSWORD = credentials('dockerhub')
-        // MONGO_URI = 'mongodb://username:password@mongodb_host:27017/database'
-        // BUILD_TAG = "${env.BUILD_NUMBER}"
-        // GIT_BRANCH = "${env.GIT_BRANCH}"
         K8S_CONFIG_REPO_URL = 'https://github.com/NourBkh/k8s-config-repo.git'
         K8S_CONFIG_BRANCH = 'main'
         DOCKER_IMAGE_FRONTEND = 'nourbkh/testingprojectfrontend'
@@ -150,11 +144,11 @@ pipeline {
       
  
 
-        // stage('Run Selenium UI Test') {
-        //     steps {
-        //         sh 'npm test || exit 1'  // Fail pipeline if UI test fails
-        //     }
-        // }
+        stage('Run Selenium UI Test') {
+            steps {
+                sh 'npm test || exit 1'  // Fail pipeline if UI test fails
+            }
+        }
 
 
 
@@ -210,29 +204,29 @@ pipeline {
 // }
 
 
-// stage('Quality Gate') {
-//     steps {
-//         timeout(time: 1, unit: 'MINUTES') {
-//             script {
-//                 def qualityGate = waitForQualityGate()
+stage('Quality Gate') {
+    steps {
+        timeout(time: 1, unit: 'MINUTES') {
+            script {
+                def qualityGate = waitForQualityGate()
                 
-//                 if (qualityGate.status != 'OK') {
-//                     slackSend(
-//                         color: '#FF0000',
-//                         message: "❌ *SonarQube Quality Gate FAILED* for ${env.JOB_NAME} - Build #${env.BUILD_NUMBER}\nStatus: ${qualityGate.status}"
-//                     )
-//                     currentBuild.result = 'FAILURE'
-//                     error("❌ Quality Gate failed: ${qualityGate.status}")
-//                 } else {
-//                     slackSend(
-//                         color: '#36a64f',
-//                         message: "✅ *SonarQube Quality Gate PASSED* for ${env.JOB_NAME} - Build #${env.BUILD_NUMBER}\nStatus: ${qualityGate.status}"
-//                     )
-//                 }
-//             }
-//         }
-//     }
-// }
+                if (qualityGate.status != 'OK') {
+                    slackSend(
+                        color: '#FF0000',
+                        message: "❌ *SonarQube Quality Gate FAILED* for ${env.JOB_NAME} - Build #${env.BUILD_NUMBER}\nStatus: ${qualityGate.status}"
+                    )
+                    currentBuild.result = 'FAILURE'
+                    error("❌ Quality Gate failed: ${qualityGate.status}")
+                } else {
+                    slackSend(
+                        color: '#36a64f',
+                        message: "✅ *SonarQube Quality Gate PASSED* for ${env.JOB_NAME} - Build #${env.BUILD_NUMBER}\nStatus: ${qualityGate.status}"
+                    )
+                }
+            }
+        }
+    }
+}
 
 
 
@@ -312,73 +306,55 @@ stage('Build Docker Images') {
 // }
 
 
-// stage('Trivy Scan') {
-//     steps {
-//         script {
-//             echo "Running Trivy scan on Docker images..."
-//             sh '''
-//                 # Set custom cache directory in workspace
-//                 export TRIVY_CACHE_DIR="$WORKSPACE/.trivycache"
-//                 mkdir -p $TRIVY_CACHE_DIR
-
-//                 # Increase timeout to 15 minutes
-//                 TIMEOUT="15m"
-
-//                 # Scan frontend image
-//                 trivy image --exit-code 1 --severity HIGH,CRITICAL --no-progress --scanners vuln --cache-dir $TRIVY_CACHE_DIR nourbkh/testingprojectfrontend:latest || echo "Vulnerabilities found in frontend image!"
-
-//                 # Scan backend image
-//                 trivy image --exit-code 1 --severity HIGH,CRITICAL --no-progress --scanners vuln --cache-dir $TRIVY_CACHE_DIR nourbkh/testingprojectbackend:latest || echo "Vulnerabilities found in backend image!"
-//             '''
-//         }
-//     }
-// }
-
-
-
-
-// stage('Pull Existing Images') {
-//     steps {
-//         script {
-//             echo "Pulling existing images from Docker Hub..."
-
-//             // Pull the frontend image
-//             sh 'docker pull nourbkh/testingprojectfrontend:latest'
-
-//             // Pull the backend image
-//             sh 'docker pull nourbkh/testingprojectbackend:latest'
-
-//             // Optionally, pull the MongoDB image (if needed)
-//             sh 'docker pull mongo:latest'
-//         }
-//     }
-// }
-
-
-
-stage('Push Docker Images to Docker Hub') {
+stage('Trivy Scan') {
     steps {
         script {
-            echo "Pushing Docker images to Docker Hub..."
+            echo "Running Trivy scan on Docker images..."
+            sh '''
+                # Set custom cache directory in workspace
+                export TRIVY_CACHE_DIR="$WORKSPACE/.trivycache"
+                mkdir -p $TRIVY_CACHE_DIR
 
-            // Log in to Docker Hub (make sure credentials are stored in Jenkins)
-            withCredentials([usernamePassword(credentialsId: 'dockerhub-credentials', usernameVariable: 'DOCKER_USERNAME', passwordVariable: 'DOCKER_PASSWORD')]) {
-                sh 'echo $DOCKER_PASSWORD | docker login -u $DOCKER_USERNAME --password-stdin'
-            }
+                # Increase timeout to 15 minutes
+                TIMEOUT="15m"
 
-            // sh '''
-            //     docker push nourbkh/testingprojectfrontend:${IMAGE_TAG}
-            //     docker push nourbkh/testingprojectbackend:${IMAGE_TAG}
-            // '''
+                # Scan frontend image
+                trivy image --exit-code 1 --severity HIGH,CRITICAL --no-progress --scanners vuln --cache-dir $TRIVY_CACHE_DIR nourbkh/testingprojectfrontend:latest || echo "Vulnerabilities found in frontend image!"
 
-                      
-                    sh """
-                        docker push ${env.DOCKER_IMAGE_FRONTEND}:${env.IMAGE_TAG}
-                        docker push ${env.DOCKER_IMAGE_BACKEND}:${env.IMAGE_TAG}
-                    """
+                # Scan backend image
+                trivy image --exit-code 1 --severity HIGH,CRITICAL --no-progress --scanners vuln --cache-dir $TRIVY_CACHE_DIR nourbkh/testingprojectbackend:latest || echo "Vulnerabilities found in backend image!"
+            '''
+        }
     }
 }
-}
+
+
+
+// stage('Push Docker Images to Docker Hub') {
+//     steps {
+//         script {
+//             echo "Pushing Docker images to Docker Hub..."
+
+//             // Log in to Docker Hub (make sure credentials are stored in Jenkins)
+//             withCredentials([usernamePassword(credentialsId: 'dockerhub-credentials', usernameVariable: 'DOCKER_USERNAME', passwordVariable: 'DOCKER_PASSWORD')]) {
+//                 sh 'echo $DOCKER_PASSWORD | docker login -u $DOCKER_USERNAME --password-stdin'
+//             }
+
+//             // sh '''
+//             //     docker push nourbkh/testingprojectfrontend:${IMAGE_TAG}
+//             //     docker push nourbkh/testingprojectbackend:${IMAGE_TAG}
+//             // '''
+
+                      
+//                     sh """
+//                         docker push ${env.DOCKER_IMAGE_FRONTEND}:${env.IMAGE_TAG}
+//                         docker push ${env.DOCKER_IMAGE_BACKEND}:${env.IMAGE_TAG}
+//                     """
+//     }
+// }
+// }
+
+
 
 
 // stage('Update Kubernetes Manifests & Push to Git') {
