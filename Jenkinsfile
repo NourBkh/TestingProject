@@ -152,7 +152,7 @@ pipeline {
 
 
 
-1  stage('Run SonarQube Analysis') {
+  stage('Run SonarQube Analysis') {
     steps {
         script {
             echo 'Running SonarQube Analysis...'
