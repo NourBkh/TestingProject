@@ -288,11 +288,11 @@ stage('Build Docker Images') {
             //     docker build -t nourbkh/testingprojectbackend:${IMAGE_TAG} -f backend/Dockerfile backend/
             // '''
 
-                      //  docker build -t ${env.DOCKER_IMAGE_BACKEND}:${env.IMAGE_TAG} -f backend/Dockerfile backend/
 
 
                     sh """
                         docker build -t ${env.DOCKER_IMAGE_FRONTEND}:${env.IMAGE_TAG} -f frontend/Dockerfile frontend/
+                        docker build -t ${env.DOCKER_IMAGE_BACKEND}:${env.IMAGE_TAG} -f backend/Dockerfile backend/
                     """
         }
     }
@@ -371,10 +371,10 @@ stage('Push Docker Images to Docker Hub') {
             //     docker push nourbkh/testingprojectbackend:${IMAGE_TAG}
             // '''
 
-                  //    docker push ${env.DOCKER_IMAGE_BACKEND}:${env.IMAGE_TAG}
+                      
                     sh """
                         docker push ${env.DOCKER_IMAGE_FRONTEND}:${env.IMAGE_TAG}
-                        
+                        docker push ${env.DOCKER_IMAGE_BACKEND}:${env.IMAGE_TAG}
                     """
     }
 }
@@ -448,8 +448,9 @@ stage('Update Helm Chart & Push to Git') {
 
             // Use sed to replace the tag for frontend and backend in the values.yaml file
             sh """
-                sed -i '/^backend:/,/^[^ ]/ s|^\\( *tag: *\\)\".*\"|\\1\"${IMAGE_TAG}\"|' k8s-config-repo/azHelmDeployment/values.yaml
                 sed -i '/^frontend:/,/^[^ ]/ s|^\\( *tag: *\\)\".*\"|\\1\"${IMAGE_TAG}\"|' k8s-config-repo/azHelmDeployment/values.yaml
+                sed -i '/^backend:/,/^[^ ]/ s|^\\( *tag: *\\)\".*\"|\\1\"${IMAGE_TAG}\"|' k8s-config-repo/azHelmDeployment/values.yaml
+
             """
 
             // Print the updated values file to verify
