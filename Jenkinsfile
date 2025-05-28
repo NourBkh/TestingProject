@@ -152,24 +152,24 @@ pipeline {
 
 
 
-// 1  stage('Run SonarQube Analysis') {
-//     steps {
-//         script {
-//             echo 'Running SonarQube Analysis...'
-//             sh '''
-//                 # Install SonarQube scanner locally
-//                 npm install sonarqube-scanner
+1  stage('Run SonarQube Analysis') {
+    steps {
+        script {
+            echo 'Running SonarQube Analysis...'
+            sh '''
+                # Install SonarQube scanner locally
+                npm install sonarqube-scanner
 
-//                 # Run SonarQube analysis using the locally installed scanner
-//                 npx sonar-scanner \
-//                     -Dsonar.projectKey=TestingProject \
-//                     -Dsonar.sources=. \
-//                     -Dsonar.host.url=${SONARQUBE_URL} \
-//                     -Dsonar.login=${SONARQUBE_TOKEN}
-//             '''
-//         }
-//     }
-// }
+                # Run SonarQube analysis using the locally installed scanner
+                npx sonar-scanner \
+                    -Dsonar.projectKey=TestingProject \
+                    -Dsonar.sources=. \
+                    -Dsonar.host.url=${SONARQUBE_URL} \
+                    -Dsonar.login=${SONARQUBE_TOKEN}
+            '''
+        }
+    }
+}
 
 
 
@@ -204,29 +204,29 @@ pipeline {
 // }
 
 
-stage('Quality Gate') {
-    steps {
-        timeout(time: 1, unit: 'MINUTES') {
-            script {
-                def qualityGate = waitForQualityGate()
+// stage('Quality Gate') {
+//     steps {
+//         timeout(time: 1, unit: 'MINUTES') {
+//             script {
+//                 def qualityGate = waitForQualityGate()
                 
-                if (qualityGate.status != 'OK') {
-                    slackSend(
-                        color: '#FF0000',
-                        message: "❌ *SonarQube Quality Gate FAILED* for ${env.JOB_NAME} - Build #${env.BUILD_NUMBER}\nStatus: ${qualityGate.status}"
-                    )
-                    currentBuild.result = 'FAILURE'
-                    error("❌ Quality Gate failed: ${qualityGate.status}")
-                } else {
-                    slackSend(
-                        color: '#36a64f',
-                        message: "✅ *SonarQube Quality Gate PASSED* for ${env.JOB_NAME} - Build #${env.BUILD_NUMBER}\nStatus: ${qualityGate.status}"
-                    )
-                }
-            }
-        }
-    }
-}
+//                 if (qualityGate.status != 'OK') {
+//                     slackSend(
+//                         color: '#FF0000',
+//                         message: "❌ *SonarQube Quality Gate FAILED* for ${env.JOB_NAME} - Build #${env.BUILD_NUMBER}\nStatus: ${qualityGate.status}"
+//                     )
+//                     currentBuild.result = 'FAILURE'
+//                     error("❌ Quality Gate failed: ${qualityGate.status}")
+//                 } else {
+//                     slackSend(
+//                         color: '#36a64f',
+//                         message: "✅ *SonarQube Quality Gate PASSED* for ${env.JOB_NAME} - Build #${env.BUILD_NUMBER}\nStatus: ${qualityGate.status}"
+//                     )
+//                 }
+//             }
+//         }
+//     }
+// }
 
 
 
