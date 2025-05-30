@@ -152,24 +152,24 @@ pipeline {
 
 
 
-//   stage('Run SonarQube Analysis') {
-//     steps {
-//         script {
-//             echo 'Running SonarQube Analysis...'
-//             sh '''
-//                 # Install SonarQube scanner locally
-//                 npm install sonarqube-scanner
+  stage('Run SonarQube Analysis') {
+    steps {
+        script {
+            echo 'Running SonarQube Analysis...'
+            sh '''
+                # Install SonarQube scanner locally
+                npm install sonarqube-scanner
 
-//                 # Run SonarQube analysis using the locally installed scanner
-//                 npx sonar-scanner \
-//                     -Dsonar.projectKey=TestingProject \
-//                     -Dsonar.sources=. \
-//                     -Dsonar.host.url=${SONARQUBE_URL} \
-//                     -Dsonar.login=${SONARQUBE_TOKEN}
-//             '''
-//         }
-//     }
-// }
+                # Run SonarQube analysis using the locally installed scanner
+                npx sonar-scanner \
+                    -Dsonar.projectKey=TestingProject \
+                    -Dsonar.sources=. \
+                    -Dsonar.host.url=${SONARQUBE_URL} \
+                    -Dsonar.login=${SONARQUBE_TOKEN}
+            '''
+        }
+    }
+}
 
 
 
@@ -306,27 +306,27 @@ stage('Build Docker Images') {
 // }
 
 
-stage('Trivy Scan') {
-    steps {
-        script {
-            echo "Running Trivy scan on Docker images..."
-            sh '''
-                # Set custom cache directory in workspace
-                export TRIVY_CACHE_DIR="$WORKSPACE/.trivycache"
-                mkdir -p $TRIVY_CACHE_DIR
+// stage('Trivy Scan') {
+//     steps {
+//         script {
+//             echo "Running Trivy scan on Docker images..."
+//             sh '''
+//                 # Set custom cache directory in workspace
+//                 export TRIVY_CACHE_DIR="$WORKSPACE/.trivycache"
+//                 mkdir -p $TRIVY_CACHE_DIR
 
-                # Increase timeout to 15 minutes
-                TIMEOUT="15m"
+//                 # Increase timeout to 15 minutes
+//                 TIMEOUT="15m"
 
-                # Scan frontend image
-                trivy image --exit-code 1 --severity HIGH,CRITICAL --no-progress --scanners vuln --cache-dir $TRIVY_CACHE_DIR nourbkh/testingprojectfrontend:latest || echo "Vulnerabilities found in frontend image!"
+//                 # Scan frontend image
+//                 trivy image --exit-code 1 --severity HIGH,CRITICAL --no-progress --scanners vuln --cache-dir $TRIVY_CACHE_DIR nourbkh/testingprojectfrontend:latest || echo "Vulnerabilities found in frontend image!"
 
-                # Scan backend image
-                trivy image --exit-code 1 --severity HIGH,CRITICAL --no-progress --scanners vuln --cache-dir $TRIVY_CACHE_DIR nourbkh/testingprojectbackend:latest || echo "Vulnerabilities found in backend image!"
-            '''
-        }
-    }
-}
+//                 # Scan backend image
+//                 trivy image --exit-code 1 --severity HIGH,CRITICAL --no-progress --scanners vuln --cache-dir $TRIVY_CACHE_DIR nourbkh/testingprojectbackend:latest || echo "Vulnerabilities found in backend image!"
+//             '''
+//         }
+//     }
+// }
 
 
 
