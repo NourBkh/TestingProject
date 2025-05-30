@@ -142,6 +142,19 @@ pipeline {
             }
         }
 
+        stage('Start Backend') {
+    steps {
+        dir('backend') {
+            sh '''
+                nohup node server.js > backend.log 2>&1 &
+                sleep 2
+                cat backend.log
+            '''
+        }
+    }
+}
+
+
         stage('Verify Frontend is Running') {
             steps {
                 sh '''
