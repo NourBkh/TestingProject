@@ -33,47 +33,71 @@ pipeline {
             }
         }
 
-        stage('Install Chrome for Selenium') {
-            steps {
-                script {
-                    def chromeInstalled = sh(script: 'which google-chrome', returnStatus: true)
-                    if (chromeInstalled != 0) {
-                        echo 'Installing Google Chrome...'
-                        sh '''
-                            sudo apt-get update
-                            sudo apt-get install -y google-chrome-stable
-                        '''
-                    } else {
-                        echo 'Google Chrome is already installed.'
-                    }
-                }
-            }
+    stage('Use Node 20 with NVM') {
+        steps {
+            sh '''
+                export NVM_DIR="$HOME/.nvm"
+                [ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh"
+                nvm use 20
+                node -v
+                npm -v
+            '''
         }
+    }
 
-        stage('Install ChromeDriver for Selenium') {
-            steps {
-                script {
-                    def chromedriverInstalled = sh(script: 'which chromedriver', returnStatus: true)
-                    if (chromedriverInstalled != 0) {
-                        echo 'Installing ChromeDriver...'
-                        sh '''
-                            sudo apt-get install -y chromium-chromedriver
-                            sudo apt-get update
-                        '''
-                    } else {
-                        echo 'ChromeDriver is already installed.'
-                    }
-                }
-            }
+    stage('Install Dependencies') {
+        steps {
+            sh '''
+                export NVM_DIR="$HOME/.nvm"
+                [ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh"
+                nvm use 20
+                npm install
+            '''
         }
+    }
+
+
+        // stage('Install Chrome for Selenium') {
+        //     steps {
+        //         script {
+        //             def chromeInstalled = sh(script: 'which google-chrome', returnStatus: true)
+        //             if (chromeInstalled != 0) {
+        //                 echo 'Installing Google Chrome...'
+        //                 sh '''
+        //                     sudo apt-get update
+        //                     sudo apt-get install -y google-chrome-stable
+        //                 '''
+        //             } else {
+        //                 echo 'Google Chrome is already installed.'
+        //             }
+        //         }
+        //     }
+        // }
+
+        // stage('Install ChromeDriver for Selenium') {
+        //     steps {
+        //         script {
+        //             def chromedriverInstalled = sh(script: 'which chromedriver', returnStatus: true)
+        //             if (chromedriverInstalled != 0) {
+        //                 echo 'Installing ChromeDriver...'
+        //                 sh '''
+        //                     sudo apt-get install -y chromium-chromedriver
+        //                     sudo apt-get update
+        //                 '''
+        //             } else {
+        //                 echo 'ChromeDriver is already installed.'
+        //             }
+        //         }
+        //     }
+        // }
 
 
 
-        stage('Install Dependencies') {
-            steps {
-                sh 'npm install'
-            }
-        }
+        // stage('Install Dependencies') {
+        //     steps {
+        //         sh 'npm install'
+        //     }
+        // }
 
         stage('Install Frontend Dependencies') {
     steps {
