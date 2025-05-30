@@ -24,12 +24,19 @@ pipeline {
             }
         }
 
-        stage('Verify Node.js Installation') {
+        // stage('Verify Node.js Installation') {
+        //     steps {
+        //         sh '''
+        //             node -v
+        //             npm -v
+        //         '''
+        //     }
+        // }
+        stage('Check Node Version') {
             steps {
-                sh '''
-                    node -v
-                    npm -v
-                '''
+                sh 'which node'
+                sh 'node -v'
+                sh 'npm -v'
             }
         }
 
