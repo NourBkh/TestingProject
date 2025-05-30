@@ -67,6 +67,22 @@ pipeline {
             }
         }
 
+
+        stage('Install Node.js via NVM') {
+    steps {
+        sh '''
+            export NVM_DIR="$HOME/.nvm"
+            curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.3/install.sh | bash
+            [ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh"
+            nvm install 20
+            nvm use 20
+            node -v
+            npm -v
+        '''
+    }
+}
+
+
         stage('Install Dependencies') {
             steps {
                 sh 'npm install'
