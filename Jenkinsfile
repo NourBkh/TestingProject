@@ -192,7 +192,7 @@ stage('Run SonarQube Analysis') {
     script {
       withVault([
         [$class: 'VaultSecret',
-         path: 'secrets/kv/jenkins/sonar',
+         path: 'kv/jenkins/sonar',
          secretValues: [
            [$class: 'VaultSecretValue', envVar: 'SONARQUBE_TOKEN', vaultKey: 'sonartoken']
          ]
