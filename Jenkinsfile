@@ -188,12 +188,17 @@ stage('Install Backend Dependencies') {
 
 
 stage('Run SonarQube Analysis') {
-      environment {
-        // Pull token securely from Vault path and key
-        SONARQUBE_TOKEN = vault path: 'secrets/kv/jenkins/sonar', key: 'sonartoken'
-      }
-      steps {
-        script {
+  steps {
+    script {
+      withVault([
+        [$class: 'VaultSecret',
+         path: 'secrets/kv/jenkins/sonar',
+         secretValues: [
+           [$class: 'VaultSecretValue', envVar: 'SONARQUBE_TOKEN', vaultKey: 'sonartoken']
+         ]
+        ]
+      ]) {
+        withEnv(["SONARQUBE_URL=http://localhost:9000"]) {
           echo 'Running SonarQube Analysis...'
           sh '''
             npm install sonarqube-scanner
@@ -207,6 +212,9 @@ stage('Run SonarQube Analysis') {
         }
       }
     }
+  }
+}
+
 
 
 //2s stage('Run SonarQube Analysis') {
