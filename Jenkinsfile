@@ -4,7 +4,7 @@ pipeline {
     environment {
         CHROME_BIN = '/usr/bin/google-chrome'
         CHROMEDRIVER_BIN = '/usr/local/bin/chromedriver'
-        PATH = "/usr/local/bin:${env.PATH}"
+        //PATH = "/usr/local/bin:${env.PATH}"
         SONARQUBE_URL = 'http://localhost:9000'
         //SONARQUBE_TOKEN = credentials('sonar')  
         SLACK_CHANNEL = '#build'
