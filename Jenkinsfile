@@ -19,6 +19,10 @@ pipeline {
 
     }
 
+    tools {
+    nodejs "Node20"  // Name of NodeJS installation configured in Jenkins
+  }
+
     stages {
         stage('Checkout Code') {
             steps {
@@ -37,6 +41,7 @@ pipeline {
         stage('Check Node Version') {
             steps {
                 sh 'which node'
+                sh 'which npm'
                 sh 'node -v'
                 sh 'npm -v'
             }
