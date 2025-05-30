@@ -13,6 +13,8 @@ pipeline {
         DOCKER_IMAGE_FRONTEND = 'nourbkh/testingprojectfrontend'
         DOCKER_IMAGE_BACKEND = 'nourbkh/testingprojectbackend'
         GIT_CREDENTIALS_ID = 'TestingProject'  
+        NODE_HOME = "/home/nour/.nvm/versions/node/v20.19.2/bin"
+        PATH = "${NODE_HOME}:${PATH}"
        
 
     }
