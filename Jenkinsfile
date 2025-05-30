@@ -272,25 +272,25 @@ stage('Init') {
         }
 
 
-stage('Build Docker Images') {
-    steps {
-        script {
-            echo "Building Docker images for frontend and backend..."
+// stage('Build Docker Images') {
+//     steps {
+//         script {
+//             echo "Building Docker images for frontend and backend..."
             
-            // sh '''
-            //     docker build -t nourbkh/testingprojectfrontend:${IMAGE_TAG} -f frontend/Dockerfile frontend/
-            //     docker build -t nourbkh/testingprojectbackend:${IMAGE_TAG} -f backend/Dockerfile backend/
-            // '''
+//             // sh '''
+//             //     docker build -t nourbkh/testingprojectfrontend:${IMAGE_TAG} -f frontend/Dockerfile frontend/
+//             //     docker build -t nourbkh/testingprojectbackend:${IMAGE_TAG} -f backend/Dockerfile backend/
+//             // '''
 
 
 
-                    sh """
-                        docker build -t ${env.DOCKER_IMAGE_FRONTEND}:${env.IMAGE_TAG} -f frontend/Dockerfile frontend/
-                        docker build -t ${env.DOCKER_IMAGE_BACKEND}:${env.IMAGE_TAG} -f backend/Dockerfile backend/
-                    """
-        }
-    }
-}
+//                     sh """
+//                         docker build -t ${env.DOCKER_IMAGE_FRONTEND}:${env.IMAGE_TAG} -f frontend/Dockerfile frontend/
+//                         docker build -t ${env.DOCKER_IMAGE_BACKEND}:${env.IMAGE_TAG} -f backend/Dockerfile backend/
+//                     """
+//         }
+//     }
+// }
 
 
 // stage('Cleanup Disk Space') {
