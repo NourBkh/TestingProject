@@ -72,13 +72,14 @@ stage('Install Node.js 20') {
     steps {
         sh '''
             npm install -g n
-            n 20
+            n -y 20
             export PATH="/usr/local/n/versions/node/20/bin:$PATH"
             node -v
             npm -v
         '''
     }
 }
+
 
 
 
