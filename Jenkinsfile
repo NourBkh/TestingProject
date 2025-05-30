@@ -28,14 +28,7 @@ pipeline {
             }
         }
 
-        // stage('Verify Node.js Installation') {
-        //     steps {
-        //         sh '''
-        //             node -v
-        //             npm -v
-        //         '''
-        //     }
-        // }
+
         stage('Check Node Version') {
             steps {
                 sh 'which node'
@@ -79,14 +72,6 @@ pipeline {
         //                 echo 'ChromeDriver is already installed.'
         //             }
         //         }
-        //     }
-        // }
-
-
-
-        // stage('Install Dependencies') {
-        //     steps {
-        //         sh 'npm install'
         //     }
         // }
 
@@ -205,7 +190,7 @@ stage('Install Backend Dependencies') {
 stage('Run SonarQube Analysis') {
       environment {
         // Pull token securely from Vault path and key
-        SONARQUBE_TOKEN = vault path: 'secrets/kv/jenkins/sonar', key: 'token'
+        SONARQUBE_TOKEN = vault path: 'secrets/kv/jenkins/sonar', key: 'sonartoken'
       }
       steps {
         script {
