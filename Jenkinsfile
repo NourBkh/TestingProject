@@ -71,14 +71,15 @@ pipeline {
 stage('Install Node.js 20') {
     steps {
         sh '''
-            sudo npm install -g n
-            sudo n 20
+            npm install -g n
+            n 20
             export PATH="/usr/local/n/versions/node/20/bin:$PATH"
             node -v
             npm -v
         '''
     }
 }
+
 
 
 
