@@ -113,13 +113,17 @@ pipeline {
 
 
         stage('Start Backend') {
-            steps {
-                dir('backend') {
-                    sh 'nohup node server.js > backend.log 2>&1 &'
-                }
-                sh 'sleep 10'  // Wait for backend to start
-            }
+    steps {
+        dir('backend') {
+            sh '''
+                nohup node server.js > backend.log 2>&1 &
+                sleep 2
+                cat backend.log
+            '''
         }
+    }
+}
+
 
         stage('Start Frontend') {
     steps {
@@ -142,18 +146,7 @@ pipeline {
             }
         }
 
-        stage('Start Backend') {
-    steps {
-        dir('backend') {
-            sh '''
-                nohup node server.js > backend.log 2>&1 &
-                sleep 2
-                cat backend.log
-            '''
-        }
-    }
-}
-
+        
 
         stage('Verify Frontend is Running') {
             steps {
