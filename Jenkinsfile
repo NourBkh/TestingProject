@@ -34,16 +34,13 @@ pipeline {
         //         '''
         //     }
         // }
-         stage('Check Node Version') {
-      steps {
-        // Add the nvm node path to PATH env var manually
-        sh '''
-          export PATH=/home/nour/.nvm/versions/node/v20.19.2/bin:$PATH
-          node -v
-          npm -v
-        '''
-      }
-    }
+        stage('Check Node Version') {
+            steps {
+                sh 'which node'
+                sh 'node -v'
+                sh 'npm -v'
+            }
+        }
 
 
 
