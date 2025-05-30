@@ -19,9 +19,7 @@ pipeline {
 
     }
 
-    tools {
-    nodejs "Node20"  // Name of NodeJS installation configured in Jenkins
-  }
+ 
 
     stages {
         stage('Checkout Code') {
