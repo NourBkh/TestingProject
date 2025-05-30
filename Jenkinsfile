@@ -68,17 +68,18 @@ pipeline {
         }
 
 
-stage('Install Node.js 20') {
+stage('Verify Node.js') {
     steps {
         sh '''
-            npm install -g n
-            n -y 20
-            export PATH="/usr/local/n/versions/node/20/bin:$PATH"
+            export NVM_DIR="$HOME/.nvm"
+            [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+            nvm use 20
             node -v
             npm -v
         '''
     }
 }
+
 
 
 
