@@ -445,36 +445,43 @@ stage('Update Helm Chart & Push to Git') {
                 rm -rf k8s-config-repo
                 git clone -b ${K8S_CONFIG_BRANCH} ${K8S_CONFIG_REPO_URL} k8s-config-repo
             '''
+//[this is the local deployment section]
+// Update values files with the new image tags
 
-            // Update values files with the new image tags
+ sh 'grep "tag:" k8s-config-repo/helmTestingP/testingprojectHelm/values-frontend.yaml'
+
+ sh """
+     sed -i 's|\\(tag:\\s*\\)\".*\"|\\1\"${env.IMAGE_TAG}\"|' k8s-config-repo/helmTestingP/testingprojectHelm/values-frontend.yaml
+     sed -i 's|tag: \".*\"|tag: \"${env.IMAGE_TAG}\"|' k8s-config-repo/helmTestingP/testingprojectHelm/values-backend.yaml
+ """
+
+ sh 'cat k8s-config-repo/helmTestingP/testingprojectHelm/values-frontend.yaml'
+ sh 'cat k8s-config-repo/helmTestingP/testingprojectHelm/values-backend.yaml'
+//[/local deployment section]
 
 
-// sh 'grep "tag:" k8s-config-repo/helmTestingP/testingprojectHelm/values-frontend.yaml'
 
-// sh """
-//     sed -i 's|\\(tag:\\s*\\)\".*\"|\\1\"${env.IMAGE_TAG}\"|' k8s-config-repo/helmTestingP/testingprojectHelm/values-frontend.yaml
-//     sed -i 's|tag: \".*\"|tag: \"${env.IMAGE_TAG}\"|' k8s-config-repo/helmTestingP/testingprojectHelm/values-backend.yaml
-// """
-
-// sh 'cat k8s-config-repo/helmTestingP/testingprojectHelm/values-frontend.yaml'
-
-
+//[this is the cloud deployment section]
 // Update values files with the new image tags in the single values.yaml file
-            sh """
-                # Check the current tag for frontend and backend in the values.yaml file
-                grep "tag:" k8s-config-repo/azHelmDeployment/values.yaml
-            """
+
+            // sh """
+            //     # Check the current tag for frontend and backend in the values.yaml file
+            //     grep "tag:" k8s-config-repo/azHelmDeployment/values.yaml
+            // """
 
             // Use sed to replace the tag for frontend and backend in the values.yaml file
-            sh """
-                sed -i '/^frontend:/,/^[^ ]/ s|^\\( *tag: *\\)\".*\"|\\1\"${IMAGE_TAG}\"|' k8s-config-repo/azHelmDeployment/values.yaml
-                sed -i '/^backend:/,/^[^ ]/ s|^\\( *tag: *\\)\".*\"|\\1\"${IMAGE_TAG}\"|' k8s-config-repo/azHelmDeployment/values.yaml
 
-            """
+            // sh """
+            //     sed -i '/^frontend:/,/^[^ ]/ s|^\\( *tag: *\\)\".*\"|\\1\"${IMAGE_TAG}\"|' k8s-config-repo/azHelmDeployment/values.yaml
+            //     sed -i '/^backend:/,/^[^ ]/ s|^\\( *tag: *\\)\".*\"|\\1\"${IMAGE_TAG}\"|' k8s-config-repo/azHelmDeployment/values.yaml
+
+            // """
 
             // Print the updated values file to verify
-            sh 'cat k8s-config-repo/azHelmDeployment/values.yaml'
 
+            // sh 'cat k8s-config-repo/azHelmDeployment/values.yaml'
+
+//[/cloud deployment section]
 
 
 
