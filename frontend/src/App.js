@@ -9,7 +9,7 @@ import "bootstrap/dist/css/bootstrap.min.css";
 //const API_URL = process.env.REACT_APP_API_URL || "/api/users"; 
 // const API_URL = "http://backend-service:5000/api/users";
 //const API_URL = "/api/users"; this is for azure deployment
- const API_URL = "http://backend.local/users"; // this is for local deployment
+const API_URL = "http://backend.local/api/users"; // this is for local deployment
 
 
 function App() {
