@@ -7,8 +7,10 @@ import "bootstrap/dist/css/bootstrap.min.css";
 //const API_URL = "http://backend-service.azpfe-app.svc.cluster.local:5000/users";
 // if you Want it to work both locally and in the cluster and And set REACT_APP_API_URL=http://backend-service:5000/api/users in your Docker build or Kubernetes config.
 //const API_URL = process.env.REACT_APP_API_URL || "/api/users"; 
-//const API_URL = "http://backend-service:5000/api/users";
-const API_URL = "/api/users";
+// const API_URL = "http://backend-service:5000/api/users";
+//const API_URL = "/api/users"; this is for azure deployment
+ const API_URL = "http://backend.local/users"; // this is for local deployment
+
 
 function App() {
     const [users, setUsers] = useState([]);
