@@ -186,33 +186,47 @@ stage('Install Backend Dependencies') {
 // }
 
 
-stage('Run SonarQube Analysis') {
-  steps {
-    script {
-      withVault([
-        [$class: 'VaultSecret',
-         path: 'kv/jenkins/sonar',
-         secretValues: [
-           [$class: 'VaultSecretValue', envVar: 'SONARQUBE_TOKEN', vaultKey: 'sonartoken']
-         ]
-        ]
-      ]) {
-        withEnv(["SONARQUBE_URL=http://localhost:9000"]) {
-          echo 'Running SonarQube Analysis...'
-          sh '''
-            npm install sonarqube-scanner
 
-            npx sonar-scanner \
-              -Dsonar.projectKey=TestingProject \
-              -Dsonar.sources=. \
-              -Dsonar.host.url=${SONARQUBE_URL} \
-              -Dsonar.login=${SONARQUBE_TOKEN}
-          '''
-        }
-      }
-    }
-  }
-}
+
+
+
+
+
+//this is the one thats working 
+// stage('Run SonarQube Analysis') {
+//   steps {
+//     script {
+//       withVault([
+//         [$class: 'VaultSecret',
+//          path: 'kv/jenkins/sonar',
+//          secretValues: [
+//            [$class: 'VaultSecretValue', envVar: 'SONARQUBE_TOKEN', vaultKey: 'sonartoken']
+//          ]
+//         ]
+//       ]) {
+//         withEnv(["SONARQUBE_URL=http://localhost:9000"]) {
+//           echo 'Running SonarQube Analysis...'
+//           sh '''
+//             npm install sonarqube-scanner
+
+//             npx sonar-scanner \
+//               -Dsonar.projectKey=TestingProject \
+//               -Dsonar.sources=. \
+//               -Dsonar.host.url=${SONARQUBE_URL} \
+//               -Dsonar.login=${SONARQUBE_TOKEN}
+//           '''
+//         }
+//       }
+//     }
+//   }
+// }
+
+
+
+
+
+
+
 
 
 
@@ -501,18 +515,26 @@ fi
 stage('ZAP Scan') {
   steps {
     sh '''
+      echo "⏳ Starting ZAP spider scan..."
       curl "http://192.168.1.142:8090/JSON/spider/action/scan/?apikey=nour&url=http://frontend.local:8080"
+
+      echo "⌛ Waiting for scan to complete..."
       sleep 10
+
       while true; do
-        STATUS=$(curl -s "http://192.168.1.142:8090/JSON/spider/view/status/?apikey=nour&scanId=0" | jq -r .status)
+        STATUS=$(curl -s "http://192.168.1.142:8090/JSON/spider/view/status/?apikey=nour&scanId=0" | grep -o '"status":"[0-9]*"' | grep -o '[0-9]*')
+        echo "📊 Scan status: $STATUS"
         [ "$STATUS" = "100" ] && break
         sleep 5
       done
+
+      echo "✅ Scan complete. Generating report..."
       curl "http://192.168.1.142:8090/OTHER/core/other/htmlreport/?apikey=nour" -o zap-report.html
     '''
     archiveArtifacts artifacts: 'zap-report.html', allowEmptyArchive: true
   }
 }
+
 
 
 
