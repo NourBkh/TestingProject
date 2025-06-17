@@ -192,34 +192,34 @@ stage('Install Backend Dependencies') {
 
 
 
-//this is the one thats working 
-// stage('Run SonarQube Analysis') {
-//   steps {
-//     script {
-//       withVault([
-//         [$class: 'VaultSecret',
-//          path: 'kv/jenkins/sonar',
-//          secretValues: [
-//            [$class: 'VaultSecretValue', envVar: 'SONARQUBE_TOKEN', vaultKey: 'sonartoken']
-//          ]
-//         ]
-//       ]) {
-//         withEnv(["SONARQUBE_URL=http://localhost:9000"]) {
-//           echo 'Running SonarQube Analysis...'
-//           sh '''
-//             npm install sonarqube-scanner
+this is the one thats working 
+stage('Run SonarQube Analysis') {
+  steps {
+    script {
+      withVault([
+        [$class: 'VaultSecret',
+         path: 'kv/jenkins/sonar',
+         secretValues: [
+           [$class: 'VaultSecretValue', envVar: 'SONARQUBE_TOKEN', vaultKey: 'sonartoken']
+         ]
+        ]
+      ]) {
+        withEnv(["SONARQUBE_URL=http://localhost:9000"]) {
+          echo 'Running SonarQube Analysis...'
+          sh '''
+            npm install sonarqube-scanner
 
-//             npx sonar-scanner \
-//               -Dsonar.projectKey=TestingProject \
-//               -Dsonar.sources=. \
-//               -Dsonar.host.url=${SONARQUBE_URL} \
-//               -Dsonar.login=${SONARQUBE_TOKEN}
-//           '''
-//         }
-//       }
-//     }
-//   }
-// }
+            npx sonar-scanner \
+              -Dsonar.projectKey=TestingProject \
+              -Dsonar.sources=. \
+              -Dsonar.host.url=${SONARQUBE_URL} \
+              -Dsonar.login=${SONARQUBE_TOKEN}
+          '''
+        }
+      }
+    }
+  }
+}
 
 
 
@@ -319,60 +319,60 @@ stage('Install Backend Dependencies') {
 //     }
 // }
 
-// stage('Init') {
-//             steps {
-//                 script {
-//                     // Get Git commit short hash as IMAGE_TAG
-//                     env.IMAGE_TAG = sh(script: 'git rev-parse --short HEAD', returnStdout: true).trim()
-//                 }
-//             }
-//         }
+stage('Init') {
+            steps {
+                script {
+                    // Get Git commit short hash as IMAGE_TAG
+                    env.IMAGE_TAG = sh(script: 'git rev-parse --short HEAD', returnStdout: true).trim()
+                }
+            }
+        }
 
 
-// stage('Build Docker Images') {
-//     steps {
-//         script {
-//             echo "Building Docker images for frontend and backend..."
+stage('Build Docker Images') {
+    steps {
+        script {
+            echo "Building Docker images for frontend and backend..."
             
-//             // sh '''
-//             //     docker build -t nourbkh/testingprojectfrontend:${IMAGE_TAG} -f frontend/Dockerfile frontend/
-//             //     docker build -t nourbkh/testingprojectbackend:${IMAGE_TAG} -f backend/Dockerfile backend/
-//             // '''
+            // sh '''
+            //     docker build -t nourbkh/testingprojectfrontend:${IMAGE_TAG} -f frontend/Dockerfile frontend/
+            //     docker build -t nourbkh/testingprojectbackend:${IMAGE_TAG} -f backend/Dockerfile backend/
+            // '''
 
 
 
-//                     sh """
-//                         docker build -t ${env.DOCKER_IMAGE_FRONTEND}:${env.IMAGE_TAG} -f frontend/Dockerfile frontend/
-//                         docker build -t ${env.DOCKER_IMAGE_BACKEND}:${env.IMAGE_TAG} -f backend/Dockerfile backend/
-//                     """
-//         }
-//     }
-// }
+                    sh """
+                        docker build -t ${env.DOCKER_IMAGE_FRONTEND}:${env.IMAGE_TAG} -f frontend/Dockerfile frontend/
+                        docker build -t ${env.DOCKER_IMAGE_BACKEND}:${env.IMAGE_TAG} -f backend/Dockerfile backend/
+                    """
+        }
+    }
+}
 
 
 
 
-// stage('Trivy Scan') {
-//     steps {
-//         script {
-//             echo "Running Trivy scan on Docker images..."
-//             sh '''
-//                 # Set custom cache directory in workspace
-//                 export TRIVY_CACHE_DIR="$WORKSPACE/.trivycache"
-//                 mkdir -p $TRIVY_CACHE_DIR
+stage('Trivy Scan') {
+    steps {
+        script {
+            echo "Running Trivy scan on Docker images..."
+            sh '''
+                # Set custom cache directory in workspace
+                export TRIVY_CACHE_DIR="$WORKSPACE/.trivycache"
+                mkdir -p $TRIVY_CACHE_DIR
 
-//                 # Increase timeout to 15 minutes
-//                 TIMEOUT="15m"
+                # Increase timeout to 15 minutes
+                TIMEOUT="15m"
 
-//                 # Scan frontend image
-//                 trivy image --exit-code 1 --severity HIGH,CRITICAL --no-progress --scanners vuln --cache-dir $TRIVY_CACHE_DIR nourbkh/testingprojectfrontend:latest || echo "Vulnerabilities found in frontend image!"
+                # Scan frontend image
+                trivy image --exit-code 1 --severity HIGH,CRITICAL --no-progress --scanners vuln --cache-dir $TRIVY_CACHE_DIR nourbkh/testingprojectfrontend:latest || echo "Vulnerabilities found in frontend image!"
 
-//                 # Scan backend image
-//                 trivy image --exit-code 1 --severity HIGH,CRITICAL --no-progress --scanners vuln --cache-dir $TRIVY_CACHE_DIR nourbkh/testingprojectbackend:latest || echo "Vulnerabilities found in backend image!"
-//             '''
-//         }
-//     }
-// }
+                # Scan backend image
+                trivy image --exit-code 1 --severity HIGH,CRITICAL --no-progress --scanners vuln --cache-dir $TRIVY_CACHE_DIR nourbkh/testingprojectbackend:latest || echo "Vulnerabilities found in backend image!"
+            '''
+        }
+    }
+}
 
 
 
