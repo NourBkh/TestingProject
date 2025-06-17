@@ -305,97 +305,86 @@ stage('Run SonarQube Analysis') {
 //     }
 // }
 
-stage('Init') {
-            steps {
-                script {
-                    // Get Git commit short hash as IMAGE_TAG
-                    env.IMAGE_TAG = sh(script: 'git rev-parse --short HEAD', returnStdout: true).trim()
-                }
-            }
-        }
+// stage('Init') {
+//             steps {
+//                 script {
+//                     // Get Git commit short hash as IMAGE_TAG
+//                     env.IMAGE_TAG = sh(script: 'git rev-parse --short HEAD', returnStdout: true).trim()
+//                 }
+//             }
+//         }
 
 
-stage('Build Docker Images') {
-    steps {
-        script {
-            echo "Building Docker images for frontend and backend..."
-            
-            // sh '''
-            //     docker build -t nourbkh/testingprojectfrontend:${IMAGE_TAG} -f frontend/Dockerfile frontend/
-            //     docker build -t nourbkh/testingprojectbackend:${IMAGE_TAG} -f backend/Dockerfile backend/
-            // '''
-
-
-
-                    sh """
-                        docker build -t ${env.DOCKER_IMAGE_FRONTEND}:${env.IMAGE_TAG} -f frontend/Dockerfile frontend/
-                        docker build -t ${env.DOCKER_IMAGE_BACKEND}:${env.IMAGE_TAG} -f backend/Dockerfile backend/
-                    """
-        }
-    }
-}
-
-
-// stage('Cleanup Disk Space') {
+// stage('Build Docker Images') {
 //     steps {
 //         script {
-//             echo "Cleaning up unused Docker images and containers..."
+//             echo "Building Docker images for frontend and backend..."
+            
+//             // sh '''
+//             //     docker build -t nourbkh/testingprojectfrontend:${IMAGE_TAG} -f frontend/Dockerfile frontend/
+//             //     docker build -t nourbkh/testingprojectbackend:${IMAGE_TAG} -f backend/Dockerfile backend/
+//             // '''
+
+
+
+//                     sh """
+//                         docker build -t ${env.DOCKER_IMAGE_FRONTEND}:${env.IMAGE_TAG} -f frontend/Dockerfile frontend/
+//                         docker build -t ${env.DOCKER_IMAGE_BACKEND}:${env.IMAGE_TAG} -f backend/Dockerfile backend/
+//                     """
+//         }
+//     }
+// }
+
+
+
+
+// stage('Trivy Scan') {
+//     steps {
+//         script {
+//             echo "Running Trivy scan on Docker images..."
 //             sh '''
-//                 docker system prune -af
-//                 rm -rf /tmp/*
+//                 # Set custom cache directory in workspace
+//                 export TRIVY_CACHE_DIR="$WORKSPACE/.trivycache"
+//                 mkdir -p $TRIVY_CACHE_DIR
+
+//                 # Increase timeout to 15 minutes
+//                 TIMEOUT="15m"
+
+//                 # Scan frontend image
+//                 trivy image --exit-code 1 --severity HIGH,CRITICAL --no-progress --scanners vuln --cache-dir $TRIVY_CACHE_DIR nourbkh/testingprojectfrontend:latest || echo "Vulnerabilities found in frontend image!"
+
+//                 # Scan backend image
+//                 trivy image --exit-code 1 --severity HIGH,CRITICAL --no-progress --scanners vuln --cache-dir $TRIVY_CACHE_DIR nourbkh/testingprojectbackend:latest || echo "Vulnerabilities found in backend image!"
 //             '''
 //         }
 //     }
 // }
 
 
-stage('Trivy Scan') {
-    steps {
-        script {
-            echo "Running Trivy scan on Docker images..."
-            sh '''
-                # Set custom cache directory in workspace
-                export TRIVY_CACHE_DIR="$WORKSPACE/.trivycache"
-                mkdir -p $TRIVY_CACHE_DIR
 
-                # Increase timeout to 15 minutes
-                TIMEOUT="15m"
+// stage('Push Docker Images to Docker Hub') {
+//     steps {
+//         script {
+//             echo "Pushing Docker images to Docker Hub..."
 
-                # Scan frontend image
-                trivy image --exit-code 1 --severity HIGH,CRITICAL --no-progress --scanners vuln --cache-dir $TRIVY_CACHE_DIR nourbkh/testingprojectfrontend:latest || echo "Vulnerabilities found in frontend image!"
+//             // Log in to Docker Hub (make sure credentials are stored in Jenkins)
+//             withCredentials([usernamePassword(credentialsId: 'dockerhub-credentials', usernameVariable: 'DOCKER_USERNAME', passwordVariable: 'DOCKER_PASSWORD')]) {
+//                 sh 'echo $DOCKER_PASSWORD | docker login -u $DOCKER_USERNAME --password-stdin'
+//             }
 
-                # Scan backend image
-                trivy image --exit-code 1 --severity HIGH,CRITICAL --no-progress --scanners vuln --cache-dir $TRIVY_CACHE_DIR nourbkh/testingprojectbackend:latest || echo "Vulnerabilities found in backend image!"
-            '''
-        }
-    }
-}
-
-
-
-stage('Push Docker Images to Docker Hub') {
-    steps {
-        script {
-            echo "Pushing Docker images to Docker Hub..."
-
-            // Log in to Docker Hub (make sure credentials are stored in Jenkins)
-            withCredentials([usernamePassword(credentialsId: 'dockerhub-credentials', usernameVariable: 'DOCKER_USERNAME', passwordVariable: 'DOCKER_PASSWORD')]) {
-                sh 'echo $DOCKER_PASSWORD | docker login -u $DOCKER_USERNAME --password-stdin'
-            }
-
-            // sh '''
-            //     docker push nourbkh/testingprojectfrontend:${IMAGE_TAG}
-            //     docker push nourbkh/testingprojectbackend:${IMAGE_TAG}
-            // '''
+//             // sh '''
+//             //     docker push nourbkh/testingprojectfrontend:${IMAGE_TAG}
+//             //     docker push nourbkh/testingprojectbackend:${IMAGE_TAG}
+//             // '''
 
                       
-                    sh """
-                        docker push ${env.DOCKER_IMAGE_FRONTEND}:${env.IMAGE_TAG}
-                        docker push ${env.DOCKER_IMAGE_BACKEND}:${env.IMAGE_TAG}
-                    """
-    }
-}
-}
+//                     sh """
+//                         docker push ${env.DOCKER_IMAGE_FRONTEND}:${env.IMAGE_TAG}
+//                         docker push ${env.DOCKER_IMAGE_BACKEND}:${env.IMAGE_TAG}
+//                     """
+//     }
+// }
+// }
 
 
 
@@ -504,6 +493,27 @@ fi
         }
     }
 }
+
+
+
+
+
+stage('ZAP Scan') {
+  steps {
+    sh '''
+      curl "http://192.168.1.142:8090/JSON/spider/action/scan/?apikey=nour&url=http://frontend.local:8080"
+      sleep 10
+      while true; do
+        STATUS=$(curl -s "http://192.168.1.142:8090/JSON/spider/view/status/?apikey=nour&scanId=0" | jq -r .status)
+        [ "$STATUS" = "100" ] && break
+        sleep 5
+      done
+      curl "http://192.168.1.142:8090/OTHER/core/other/htmlreport/?apikey=nour" -o zap-report.html
+    '''
+    archiveArtifacts artifacts: 'zap-report.html', allowEmptyArchive: true
+  }
+}
+
 
 
 
