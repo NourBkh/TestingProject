@@ -515,25 +515,37 @@ fi
 stage('ZAP Scan') {
   steps {
     sh '''
-      echo "⏳ Starting ZAP spider scan..."
+      echo "⏳ Starting ZAP spider scan on FRONTEND..."
       curl "http://192.168.1.142:8090/JSON/spider/action/scan/?apikey=nour&url=http://frontend.local:8080"
 
-      echo "⌛ Waiting for scan to complete..."
+      echo "⌛ Waiting for FRONTEND scan to complete..."
       sleep 10
-
       while true; do
         STATUS=$(curl -s "http://192.168.1.142:8090/JSON/spider/view/status/?apikey=nour&scanId=0" | grep -o '"status":"[0-9]*"' | grep -o '[0-9]*')
-        echo "📊 Scan status: $STATUS"
+        echo "📊 Frontend Scan status: $STATUS"
         [ "$STATUS" = "100" ] && break
         sleep 5
       done
 
-      echo "✅ Scan complete. Generating report..."
+      echo "⏳ Starting ZAP spider scan on BACKEND..."
+      curl "http://192.168.1.142:8090/JSON/spider/action/scan/?apikey=nour&url=http://backend.local:8080/api/users"
+
+      echo "⌛ Waiting for BACKEND scan to complete..."
+      sleep 10
+      while true; do
+        STATUS=$(curl -s "http://192.168.1.142:8090/JSON/spider/view/status/?apikey=nour&scanId=1" | grep -o '"status":"[0-9]*"' | grep -o '[0-9]*')
+        echo "📊 Backend Scan status: $STATUS"
+        [ "$STATUS" = "100" ] && break
+        sleep 5
+      done
+
+      echo "✅ All scans complete. Generating report..."
       curl "http://192.168.1.142:8090/OTHER/core/other/htmlreport/?apikey=nour" -o zap-report.html
     '''
     archiveArtifacts artifacts: 'zap-report.html', allowEmptyArchive: true
   }
 }
+
 
 
 
