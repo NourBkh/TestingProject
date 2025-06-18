@@ -192,7 +192,7 @@ stage('Install Backend Dependencies') {
 
 
 
-this is the one thats working 
+//this is the one thats working 
 stage('Run SonarQube Analysis') {
   steps {
     script {
