@@ -352,27 +352,50 @@ stage('Build Docker Images') {
 
 
 
+// stage('Trivy Scan') {
+//     steps {
+//         script {
+//             echo "Running Trivy scan on Docker images..."
+//             sh '''
+//                 # Set custom cache directory in workspace
+//                 export TRIVY_CACHE_DIR="$WORKSPACE/.trivycache"
+//                 mkdir -p $TRIVY_CACHE_DIR
+
+//                 # Increase timeout to 15 minutes
+//                 TIMEOUT="15m"
+
+//                 # Scan frontend image
+//                 trivy image --exit-code 1 --severity HIGH,CRITICAL --no-progress --scanners vuln --cache-dir $TRIVY_CACHE_DIR nourbkh/testingprojectfrontend:latest || echo "Vulnerabilities found in frontend image!"
+
+//                 # Scan backend image
+//                 trivy image --exit-code 1 --severity HIGH,CRITICAL --no-progress --scanners vuln --cache-dir $TRIVY_CACHE_DIR nourbkh/testingprojectbackend:latest || echo "Vulnerabilities found in backend image!"
+//             '''
+//         }
+//     }
+// }
+
+
+
 stage('Trivy Scan') {
     steps {
         script {
             echo "Running Trivy scan on Docker images..."
-            sh '''
-                # Set custom cache directory in workspace
-                export TRIVY_CACHE_DIR="$WORKSPACE/.trivycache"
-                mkdir -p $TRIVY_CACHE_DIR
+            sh """
+                export TRIVY_CACHE_DIR="\$WORKSPACE/.trivycache"
+                mkdir -p \$TRIVY_CACHE_DIR
 
-                # Increase timeout to 15 minutes
                 TIMEOUT="15m"
 
-                # Scan frontend image
-                trivy image --exit-code 1 --severity HIGH,CRITICAL --no-progress --scanners vuln --cache-dir $TRIVY_CACHE_DIR nourbkh/testingprojectfrontend:latest || echo "Vulnerabilities found in frontend image!"
+                # Scan frontend image with correct tag
+                trivy image --exit-code 1 --severity HIGH,CRITICAL --no-progress --scanners vuln --cache-dir \$TRIVY_CACHE_DIR ${env.DOCKER_IMAGE_FRONTEND}:${env.IMAGE_TAG} || echo "Vulnerabilities found in frontend image!"
 
-                # Scan backend image
-                trivy image --exit-code 1 --severity HIGH,CRITICAL --no-progress --scanners vuln --cache-dir $TRIVY_CACHE_DIR nourbkh/testingprojectbackend:latest || echo "Vulnerabilities found in backend image!"
-            '''
+                # Scan backend image with correct tag
+                trivy image --exit-code 1 --severity HIGH,CRITICAL --no-progress --scanners vuln --cache-dir \$TRIVY_CACHE_DIR ${env.DOCKER_IMAGE_BACKEND}:${env.IMAGE_TAG} || echo "Vulnerabilities found in backend image!"
+            """
         }
     }
 }
+
 
 
 
