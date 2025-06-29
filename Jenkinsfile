@@ -319,14 +319,14 @@ stage('Run SonarQube Analysis') {
 //     }
 // }
 
-// stage('Init') {
-//             steps {
-//                 script {
-//                     // Get Git commit short hash as IMAGE_TAG
-//                     env.IMAGE_TAG = sh(script: 'git rev-parse --short HEAD', returnStdout: true).trim()
-//                 }
-//             }
-//         }
+stage('Init') {
+            steps {
+                script {
+                    // Get Git commit short hash as IMAGE_TAG
+                    env.IMAGE_TAG = sh(script: 'git rev-parse --short HEAD', returnStdout: true).trim()
+                }
+            }
+        }
 
 
 stage('Build Docker Images') {
